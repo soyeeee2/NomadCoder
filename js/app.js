@@ -14,27 +14,23 @@ const colors = [
   "#a55eea",
 ];
 
-let isPainting = false;
+ctx.lineWidth = 2;
+
+let Xcoord = 0;
+let Ycoord = 0;
 
 function onMove(event) {
-  if(isPainting) {
-    ctx.lineTo(event.offsetX, event.offsetY);
-    ctx.stroke();
-    return;
-  }
-  ctx.moveTo(event.offsetX, event.offsetY);
+  ctx.beginPath();
+  ctx.moveTo(Xcoord, Ycoord);
+  const randomColor = colors[Math.floor(Math.random() * colors.length)];
+  ctx.strokeStyle = randomColor;
+  ctx.lineTo(event.offsetX, event.offsetY);
+  ctx.stroke();
 }
 
-function startPainting() {
-  isPainting = true;
-}
-
-function cancelPainting() {
-  isPainting = false;
+function onClick(event) {
+  ctx.moveTo(event.offsetX, event.offsetY)
 }
 
 canvas.addEventListener("mousemove", onMove);
-canvas.addEventListener("mousedown", startPainting);
-canvas.addEventListener("mouseup", cancelPainting);
-canvas.addEventListener("mouseleave", cancelPainting);
-
+canvas.addEventListener("click", onClick);
