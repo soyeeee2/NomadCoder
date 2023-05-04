@@ -1,0 +1,348 @@
+var console = window.console || {log:function(){}};
+
+var api, devApi = function() {
+	var $api = this;
+	this.site = {};
+	this.serverExtention = '.php';
+	this.site.homeUrl = '/';
+	this.site.LANGS = ['kr', 'en', 'jp', 'cn', 'tw']; //언어
+	this.site.LANG = (location.href.indexOf('www.koreagrandsale.co.kr')>=0 || location.href.indexOf('dev-kgs-www.')>=0)? this.site.LANGS[0]:((location.href.indexOf('en.')>=0)? this.site.LANGS[1]:(location.href.indexOf('jp.')>=0)? this.site.LANGS[2]:(location.href.indexOf('tw.')>=0)? this.site.LANGS[4]:this.site.LANGS[3]);
+	this.site.CONTENT_URL = this.site.homeUrl;
+	this.global_params = {'pagename':'MAIN'};
+	this._CNCOM_IMAGE_URL = (location.href.indexOf('koreagrandsalecn.com')>=0)? 'https://cn.koreagrandsale.co.kr':'';
+	this._CNCOM_IMAGE_URL = (location.href.indexOf('dev-www.koreagrandsalecn.com')>=0)? 'https://dev-cn.koreagrandsale.co.kr':this._CNCOM_IMAGE_URL;
+	
+	this.loc = location.href;
+	this.IO = function (src, tar) {return src.indexOf(tar) !== -1;}
+	
+	this.msgNoData = '<tr><td colspan="{{COL_CNT}}" class="no_lst">조회된 데이터가 없습니다.</td></tr>';
+	
+	//초기함수
+	this.init = function() {
+		var loading = $('<div id="loading" class="loader-overlay"><div class="loader"></div></div>').appendTo(document.body).hide();
+		$(window).ajaxStart(function(){loading.show();setTimeout(function(){loading.hide();}, 60000)}).ajaxStop(function(){loading.hide();});
+
+		//Form데이터를 Json형식으로
+		$.fn.formSerializeObject = function() {
+			var obj = null;
+			try {
+				// this[0].tagName이 form tag일 경우
+				if (this[0].tagName && this[0].tagName.toUpperCase() == "FORM" ) {
+					var arr = this.serializeArray();
+					if (arr) {
+						obj = {};    
+						jQuery.each(arr, function() {
+							// obj의 key값은 arr의 name, obj의 value는 value값
+							obj[this.name] = this.value;
+						});				
+					}
+				}
+			} catch(e) {
+				alert(e.message);
+			} finally  {}
+
+			return obj;
+		};
+
+		$.fn.inputCalendar = function( options ) {
+
+			var defaults = {};
+			var opts = $.extend( {}, defaults, options );
+			
+			return this.each(function() {
+				/* datepicker */
+				var beforeY = 20; //20년전
+				var afterY = 10; //10년후
+	
+				$(this).datepicker({  
+					dateFormat: "yy-mm-dd", // 텍스트 필드에 입력되는 날짜 형식. 
+					maxDate: new Date(),
+					showMonthAfterYear: true, // 월, 년순의 셀렉트 박스를 년,월 순으로 바꿔준다. 
+					dayNamesMin: ['월', '화', '수', '목', '금', '토', '일'], // 요일의 한글 형식.
+					monthNamesShort: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'], // 월의 한글 형식.
+					changeYear:true, // 년 셀렉트
+					changeMonth:true, // 월 셀렉트
+					showOn: 'both', 
+					buttonImageOnly: false, 
+					buttonImage: './asset/img/common/calendar.png',
+					//yearRange: 'c-'+beforeY+':c+'+afterY // 년도 선택범위
+					yearRange: '1920:2030'
+				});
+			});
+		}
+	};
+	
+
+	this.ajaxCmd = function (_url, data, _callback) {
+		var datas = $.extend( {}, data, api.global_params );
+		var req = $.ajax({
+	    	url : _url
+			, type: 'POST'
+			, dataType:'json'
+	    	, async : true
+    	    , cache : false
+    	    , data : datas
+		});
+		
+	    req.done(function(rtn) {
+			// console.log("AJAX=", _url, datas, rtn);
+			if (api._CNCOM_IMAGE_URL !== '') {
+				rtn = JSON.stringify(rtn);
+				rtn = rtn.replace(/\"\/upload\//g, '"' + api._CNCOM_IMAGE_URL+'/upload/');
+				rtn = JSON.parse(rtn);
+			}
+			if (_callback) _callback(rtn);
+		});
+		
+	    req.fail(function (jqXHR, textStatus) {
+			//console.log(jqXHR)
+	    	//console.log("ajaxCmd Request failed : " + textStatus);
+		});
+	};
+
+
+	//JSON데이터 REPLACE
+	this.templete_Json_Merge = function(template, data) {
+		var output, pattern, ref, varName, varValue;
+		//pattern = /(?:\{{2})([\w\[\]\.]+)(?:\}{2})/;
+		pattern = /(?:\{\@)([\w\[\]\.]+)(?:\@\})/;
+		output = template;
+		while (pattern.test(output)) {
+			varName = output.match(pattern)[1];
+			varValue = (ref = $api._getObjectProperty(data, varName)) != null ? ref : '';
+			output = output.replace(pattern, function() {
+				return "" + varValue;
+			});
+		}
+		return output;
+	};
+
+	//JSON데이터 값 치환위해 불러오기
+	this._getObjectProperty = function(object, property) {
+		var piece, pieces;
+		property = property.replace(/\[(\w+)\]/g, '.$1');
+		pieces = property.split('.');
+		while (pieces.length) {
+			piece = pieces.shift();
+			
+			if ((object != null) && piece in object) {
+				object = object[piece];
+			} else {
+				return null;
+			}
+		}
+		return object;
+	};
+
+	//글 상태값 REPLACE
+	this.txtReplace = function(keyVal, compareVal) {
+	    //keyVal : 구분값. compareVal : 비교값
+	    var rtn = '';
+	    switch (keyVal) {
+		case 'ARTICLE_STATUS': //Y,D(삭제),C(차단)
+		    if (compareVal == 'C') rtn = '차단';
+		    else if (compareVal == 'D') rtn = '삭제';
+		    else if (compareVal == 'P') rtn = '신고';
+	        break;
+		case 'ARTICLE_REGDATE': //sec,min,hour,day,week,month,year
+		    if (compareVal == 'sec') rtn = '초 전';
+		    else if (compareVal == 'min') rtn = '분 전';
+		    else if (compareVal == 'hour') rtn = '시간 전';
+		    else if (compareVal == 'day') rtn = '일 전';
+		    else if (compareVal == 'week') rtn = '주일 전';
+		    else if (compareVal == 'month') rtn = '개월 전';
+		    else if (compareVal == 'year') rtn = '년 전';
+	        break;
+	    }
+	    
+	    return rtn;
+	};
+
+	//날짜 일수 계산
+	this.calDateRange = function(val1, val2) {
+		var FORMAT = "-";
+		
+        if (val1.length != 10 || val2.length != 10)
+            return null;
+        if (val1.indexOf(FORMAT) < 0 || val2.indexOf(FORMAT) < 0)
+			return null;
+			
+        var start_dt = val1.split(FORMAT);
+        var end_dt = val2.split(FORMAT);
+        start_dt[1] = (Number(start_dt[1]) - 1) + "";
+        end_dt[1] = (Number(end_dt[1]) - 1) + "";
+        var from_dt = new Date(start_dt[0], start_dt[1], start_dt[2]);
+		var to_dt = new Date(end_dt[0], end_dt[1], end_dt[2]);
+		
+        return (to_dt.getTime() - from_dt.getTime()) / 1000 / 60 / 60 / 24;
+	};
+	
+    //날짜 일수 1년 계산
+	this.calDateRangeYear = function(val1, val2) {
+        if (this.calDateRange(val1, val2) > 367) {
+        	alert("조회기간을 1년 이하로 지정하시기 바랍니다!");
+        	return true;
+		}
+		
+        return false;
+	};
+	
+	this.templete_paging = function (pageInfo) {
+		var _html = [];
+		var _bCurrent;		
+		
+		_html.push('<a href="#" class="btn_move lft'+ ((pageInfo.sp == '1') ?' disable':'') + '" data-p="' + pageInfo.pp + '">이전</a>'); //class disable
+		_html.push('<ul>');
+		
+		for (var px = pageInfo.sp; px <= pageInfo.ep;px++) {
+		    _bCurrent = "";
+		    if (px == pageInfo.page) _bCurrent = "on";
+		    _html.push('<li><a href="#" class="' + _bCurrent + '" data-p="' + px + '">' + px + '</a></li>');
+		}
+		_html.push('</ul>');
+		_html.push('<a href="#" class="btn_move rgt' + ((pageInfo.nn == pageInfo.ep) ?' disable':'') + '" data-p="' + pageInfo.nn + '">다음</a>');
+		_html = _html.join('');
+		
+		return _html;
+	};
+	
+
+	this.comma = function(n) {
+		var reg = /(^[+-]?\d+)(\d{3})/;
+		n += '';    
+		while (reg.test(n)) n = n.replace(reg, '$1' + ',' + '$2');
+		return n;
+	}
+	
+	this.jsonToparam = function (pJson) {
+		return Object.keys(pJson).map(function(k) {
+		    return encodeURIComponent(k) + '=' + encodeURIComponent(pJson[k])
+		}).join('&');
+	}
+	
+	this.html_merge = function(_templete, _jData, _colCnt) {
+		var _html = [];	
+
+		////console.log(_jData[0].cnt);
+
+		if (!Array.isArray(_jData)) {
+			//_templete = api.msgNoData;
+			_html.push(api.templete_Json_Merge(_templete, _jData));
+		} else {
+			if (_jData.length == 0 || _jData[0]['cnt'] == 0) {
+				if (_colCnt) {
+					_templete = api.msgNoData;
+					_html.push(api.templete_Json_Merge(_templete, {'COL_CNT':_colCnt}));
+				}
+			} else {
+				for (var j=0;j<_jData.length;j++) {
+					_jData[j]['__INDEX'] = j;
+					_html.push(api.templete_Json_Merge(_templete, _jData[j]));
+				}
+			}	
+		}
+		
+		_html = _html.join('');
+		return _html;
+	}
+	this.viewPhone = function(_hp, _allDisplay) {
+		if (!_allDisplay) return _hp.replace(/(^02.{0}|^01.{1}|[0-9]{3})([0-9]+)([0-9]{4})/,"$1-xxxx-$3");
+		else  return _hp.replace(/(^02.{0}|^01.{1}|[0-9]{3})([0-9]+)([0-9]{4})/,"$1-$2-$3");
+	}
+	// url 에서 parameter 추출
+	this.getParam = function (sname) {
+		//var _params = location.href.substr(location.href.indexOf("?") + 1);
+		//var params = api.site.CONTENT_URL.substr(location.search.indexOf("?") + 1);
+		var _params = location.search.substr(location.search.indexOf("?") + 1);;
+		////console.log(_params)
+		var sval = "";
+		_params = _params.split("&");
+		for (var i = 0; i < _params.length; i++) {
+			temp = _params[i].split("=");
+			if ([temp[0]] == sname) { sval = temp[1]; }
+		}
+		return sval;
+	}
+	this.getToday = function() {
+		var date = new Date();
+		var year = date.getFullYear();
+		var month = ("0" + (1 + date.getMonth())).slice(-2);
+		var day = ("0" + date.getDate()).slice(-2);
+	
+		return year + "-" + month + "-" + day;
+	}
+	this.getMonth = function() {
+		var date = new Date();
+		var year = date.getFullYear();
+		var month = ("0" + (1 + date.getMonth())).slice(-2);
+		
+		return year + "-" + month;
+	}
+	this.getArrayMonth = function(start, addmonth) {
+		var y = parseInt(start.split('-')[0]);
+		var m = parseInt(start.split('-')[1]);
+		var rtn = [];
+		for (var v=0;v<addmonth;v++){			
+			if (m>12) {y++;m=1}
+			var val = y + '-' + ("0" + (m)).slice(-2);
+			var txt = val;
+			rtn.push({"val":val, "text":txt, "dot":y+'.'+(m)});
+			m++;
+		}
+		return rtn;
+	}
+	this.getArrayMonthBetween = function(start, end) {
+
+		var y = parseInt(start.split('-')[0]);
+		var m = parseInt(start.split('-')[1]);
+
+
+		var rtn = [];
+		if (start >= end) return rtn;
+
+		while (start < end) {
+			var val = y + '-' + ("0" + (m)).slice(-2);
+			var txt = val;
+			rtn.push({"val":val, "text":txt, "dot":y+'.'+(m)});
+			if (++m>12) {y++;m=1}
+			val = y + '-' + ("0" + (m)).slice(-2);
+			start = val;			
+		}			
+		return rtn;
+	}
+	this.leadingZeros = function(n, digits) {
+		var zero = '';
+		n = n.toString();
+		if (n.length < digits) {
+			for (var i = 0; i < digits - n.length; i++)
+			zero += '0';
+		}
+		return zero + n;
+	}
+};
+
+$(function() {
+	api = new devApi();
+    api.init();
+
+    var ua = window.navigator.userAgent;
+    var trident = ua.indexOf('Trident/');
+    var setTimer = 0;
+    if (trident > 0) {
+        setTimer = 500;
+    }
+
+    try {
+        setTimeout(function () {
+            init_layout();
+        }, setTimer);
+    } catch (error) {
+	}
+    try {
+        setTimeout(function () {
+            init_page();
+        }, setTimer);		
+	} catch(error){
+	}
+});
+

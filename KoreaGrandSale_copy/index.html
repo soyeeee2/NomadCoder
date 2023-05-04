@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js"
+    integrity="sha512-XtmMtDEcNz2j7ekrtHvOVR4iwwaD6o/FUJe6+Zq+HgcCsk3kj4uSQQR8weQ2QVj1o0Pk6PwYLohm206ZzNfubg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick-theme.css"
+    integrity="sha512-6lLUdeQ5uheMFbWm3CP271l14RsX1xtx+J5x2yeIDkkiBpeVTNhTqijME7GgRKKi6hCqovwCoBTlRBEC20M8Mg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.css"
+    integrity="sha512-wR4oNhLBHf7smjy0K4oqzdWumd+r5/+6QO/vDda76MW5iug4PT7v86FoEkySIJft3XA0Ae6axhIvHrqwm793Nw=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <!-- 폰트어썸 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    integrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0v4LLanw2qksYuRlEzO+tcaEPQogQ0KaoGN26/zrn20ImR1DfuLWnOo7aBA=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <link rel="stylesheet" href="./css/style.css">
+  <script src="./js/script.js"></script>
+</head>
+
+<body>
+  <div class="top-bar-wrap">
+    <div class="head-top-bar con-s">
+      <div class="language">
+        Language - 한국어
+      </div>
+      <div class="main-logo">
+        <img src="https://www.koreagrandsale.co.kr/static/img/common/logo.png" alt="">
+      </div>
+      <div class="src-wrap row">
+        <div class="src-box cell"></div>
+        <div class="src-icon cell">
+          <i class="fa-solid fa-magnifying-glass"></i>
+        </div>
+      </div>
+    </div>
+
+    <div class="bottom-top-bar con-s">
+      <ul class="row">
+        <li class="cell">
+          <a href="#">
+            korea grand sale 2022
+          </a>
+        </li>
+        <li class="cell">
+          <a href="#">
+            calendar
+          </a>
+        </li>
+        <li class="cell">
+          <a href="#">
+            trend korea
+          </a>
+        </li>
+        <li class="cell">
+          <a href="#">
+            featured lacation
+          </a>
+        </li>
+        <li class="cell">
+          <a href="#">
+            special benefit
+          </a>
+        </li>
+        <li class="cell">
+          <a href="#">
+            travel&shopping
+          </a>
+        </li>
+        <li class="cell">
+          <a href="#">
+            travel tips
+          </a>
+        </li>
+        <li class="cell">
+          <a href="#">
+            event
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="section-wrap con-xl">
+    <div class="sec-kg con-l">
+      <div class="img-box">
+        <img src="./photo/banner01.jpg" alt="">
+      </div>
+      <div class="img-box">
+        <img src="./photo/banner01.jpg" alt="">
+      </div>
+      <div class="img-box">
+        <img src="./photo/banner01.jpg" alt="">
+      </div>
+      
+    </div>
+
+    <div class="sec-cal con-s row">
+      <h1>2022.2</h1>
+      <div class="sec-l cell">
+        <div class="calendar">
+          <div class="days row">
+            <div class="day cell">
+              <p>mon</p>
+            </div>
+            <div class="day cell">
+              <p>tue</p>
+            </div>
+            <div class="day cell">
+              <p>wed</p>
+            </div>
+            <div class="day cell">
+              <p>thu</p>
+            </div>
+            <div class="day cell">
+              <p>fri</p>
+            </div>
+            <div class="day cell">
+              <p>sat</p>
+            </div>
+            <div class="day cell">
+              <p>sun</p>
+            </div>
+          </div>
+          <div class="dates row">
+            <div class="date cell">
+              <p>31</p>
+              <div class="dot"></div>
+            </div>
+            <div class="date cell">
+              <p>1</p>
+              <div class="dot"></div>
+            </div>
+            <div class="date cell">
+              <p>2</p>
+              <div class="dot"></div>
+            </div>
+            <div class="date cell">
+              <p>3</p>
+              <div class="dot"></div>
+            </div>
+            <div class="date cell">
+              <p>4</p>
+              <div class="dot"></div>
+            </div>
+            <div class="date cell">
+              <p>5</p>
+              <div class="dot"></div>
+            </div>
+            <div class="date cell">
+              <p>6</p>
+              <div class="dot"></div>
+            </div>
+            <div class="date cell">
+              <p>7</p>
+              <div class="dot"></div>
+            </div>
+            <div class="date cell">
+              <p>8</p>
+              <div class="dot"></div>
+            </div>
+            <div class="date cell">
+              <p>9</p>
+              <div class="dot"></div>
+            </div>
+            <div class="date cell">
+              <p>10</p>
+              <div class="dot"></div>
+            </div>
+            <div class="date cell">
+              <p>11</p>
+              <div class="dot"></div>
+            </div>
+            <div class="date cell">
+              <p>12</p>
+              <div class="dot"></div>
+            </div>
+            <div class="date cell">
+              <p>13</p>
+              <div class="dot"></div>
+            </div>
+            <div class="date cell">
+              <p>14</p>
+              <div class="dot"></div>
+            </div>
+            <div class="date cell">
+              <p>15</p>
+              <div class="dot"></div>
+            </div>
+            <div class="date cell">
+              <p>16</p>
+              <div class="dot"></div>
+            </div>
+            <div class="date cell">
+              <p>17</p>
+              <div class="dot"></div>
+            </div>
+            <div class="date cell">
+              <p>18</p>
+              <div class="dot"></div>
+            </div>
+            <div class="date cell">
+              <p>19</p>
+              <div class="dot"></div>
+            </div>
+            <div class="date cell">
+              <p>20</p>
+              <div class="dot"></div>
+            </div>
+            <div class="date cell">
+              <p>21</p>
+              <div class="dot"></div>
+            </div>
+            <div class="date cell">
+              <p>22</p>
+              <div class="dot"></div>
+            </div>
+            <div class="date cell">
+              <p>23</p>
+              <div class="dot"></div>
+            </div>
+            <div class="date cell">
+              <p>24</p>
+              <div class="dot"></div>
+            </div>
+            <div class="date cell">
+              <p>25</p>
+              <div class="dot"></div>
+            </div>
+            <div class="date cell">
+              <p>26</p>
+              <div class="dot"></div>
+            </div>
+            <div class="date cell">
+              <p>27</p>
+              <div class="dot"></div>
+            </div>
+            <div class="date cell">
+              <p>28</p>
+              <div class="dot"></div>
+            </div>
+            <div class="date cell">
+              <p>1</p>
+              <div class="dot"></div>
+            </div>
+            <div class="date cell">
+              <p>2</p>
+              <div class="dot"></div>
+            </div>
+            <div class="date cell">
+              <p>3</p>
+              <div class="dot"></div>
+            </div>
+            <div class="date cell">
+              <p>4</p>
+              <div class="dot"></div>
+            </div>
+            <div class="date cell">
+              <p>5</p>
+              <div class="dot"></div>
+            </div>
+            <div class="date cell">
+              <p>6</p>
+              <div class="dot"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="sec-r1 cell">
+        <div class="content">
+          <h1>혜택</h1>
+          <div class="con-detail">
+            <h4>베스트웨스턴 플러스호텔(부산송도)</h4>
+            <h3>슈페리어 퀸 오션 테라스</h3>
+            <h4>예약 시 프로모션란에 'KGS222' 기입</h4>
+            <h4>2022-01-24 ~ 2022-02-28</h4>
+          </div>
+        </div>
+        <div class="content">
+          <h1>혜택</h1>
+          <div class="con-detail">
+            <h4>베스트웨스턴 플러스호텔(부산송도)</h4>
+            <h3>슈페리어 퀸 오션 테라스</h3>
+            <h4>예약 시 프로모션란에 'KGS222' 기입</h4>
+            <h4>2022-01-24 ~ 2022-02-28</h4>
+          </div>
+        </div>
+        <div class="content">
+          <h1>혜택</h1>
+          <div class="con-detail">
+            <h4>베스트웨스턴 플러스호텔(부산송도)</h4>
+            <h3>슈페리어 퀸 오션 테라스</h3>
+            <h4>예약 시 프로모션란에 'KGS222' 기입</h4>
+            <h4>2022-01-24 ~ 2022-02-28</h4>
+          </div>
+        </div>
+        <div class="content">
+          <h1>혜택</h1>
+          <div class="con-detail">
+            <h4>베스트웨스턴 플러스호텔(부산송도)</h4>
+            <h3>슈페리어 퀸 오션 테라스</h3>
+            <h4>예약 시 프로모션란에 'KGS222' 기입</h4>
+            <h4>2022-01-24 ~ 2022-02-28</h4>
+          </div>
+        </div>
+        <div class="content">
+          <h1>혜택</h1>
+          <div class="con-detail">
+            <h4>베스트웨스턴 플러스호텔(부산송도)</h4>
+            <h3>슈페리어 퀸 오션 테라스</h3>
+            <h4>예약 시 프로모션란에 'KGS222' 기입</h4>
+            <h4>2022-01-24 ~ 2022-02-28</h4>
+          </div>
+        </div>
+        <div class="content">
+          <h1>혜택</h1>
+          <div class="con-detail">
+            <h4>베스트웨스턴 플러스호텔(부산송도)</h4>
+            <h3>슈페리어 퀸 오션 테라스</h3>
+            <h4>예약 시 프로모션란에 'KGS222' 기입</h4>
+            <h4>2022-01-24 ~ 2022-02-28</h4>
+          </div>
+        </div>
+      </div>
+      <div class="sec-r2 cell">
+        <div class="content-wrap">
+          <div class="content">
+            <div class="img-box"
+              style="background-image:url(https://dn-img-page.kakao.com/download/resource?kid=b9mpzD/hyLjfCBcqh/IuguTLDrF6SLYca42yhLLk);">
+            </div>
+          </div>
+          <div class="content">
+            <div class="img-box"
+              style="background-image:url(https://dn-img-page.kakao.com/download/resource?kid=pMlAn/hyLjfWT4lx/w7Ivc3QKPix4bzBgJ0Xvb0);">
+            </div>
+          </div>
+          <div class="content">
+            <div class="img-box"
+              style="background-image:url(https://c.tenor.com/RSFvAKQkWJoAAAAC/%EC%B6%98%EC%8B%9D-%EC%B6%98%EC%8B%9D%EC%9D%B4.gif);">
+            </div>
+          </div>
+          <div class="content">
+            <div class="img-box"
+              style="background-image:url(https://c.tenor.com/ykaBF7v0ivMAAAAd/%EC%B6%98%EC%8B%9D%EC%9D%B4-%EC%B6%98%EC%8B%9D.gif);">
+            </div>
+          </div>
+          <div class="content">
+            <div class="img-box"
+              style="background-image:url(https://talkstation.co.kr/edu/data_file/tsclub_photo_board/202109/25737_1_img1632731061.gif);">
+            </div>
+          </div>
+          <div class="content">
+            <div class="img-box"
+              style="background-image:url(https://c.tenor.com/5ZJoM2oH8_IAAAAC/%EC%B6%98%EC%8B%9D-%EC%B6%98%EC%8B%9D%EC%9D%B4.gif);">
+            </div>
+          </div>
+        </div>
+        <div class="view-all">
+          <p>view all</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec-benefit">
+        <div class="content-wrap con-s">
+          <h1>special benefit</h1>
+
+          <div class="promotion-box row">
+            <div class="promotion promotion01 cell">
+              <p>한국관광상품 선구매 프로모션</p>
+              <div class="btn-next">
+                <p>&#62;</p>
+              </div>
+              <div class="img-box" style="background-image:url(./photo/btn_benefit_illust_1.png);"></div>
+            </div>
+            <div class="promotion promotion02 cell">
+              <p>온라인 쇼핑 프로모션</p>
+              <div class="btn-next">
+                <p>&#62;</p>
+              </div>
+              <div class="img-box" style="background-image:url(./photo/btn_benefit_illust_2.png);"></div>
+            </div>
+            <div class="promotion promotion03 cell">
+              <p>온라인 체험 프로모션</p>
+              <div class="btn-next">
+                <p>&#62;</p>
+              </div>
+              <div class="img-box" style="background-image:url(./photo/btn_benefit_illust_3.png);"></div>
+            </div>
+          </div>
+
+          <div class="slider-wrap">
+            <div class="benefit-slider">
+              <div class="content">
+                <div class="img-box"
+                  style="background-image:url(./photo/benefit\ slider1.jpg);">
+                </div>
+                
+              </div>
+              <div class="content">
+                <div class="img-box"
+                  style="background-image:url(./photo/benefit\ slider2.jpg);">
+                </div>
+                
+              </div>
+              <div class="content">
+                <div class="img-box"
+                  style="background-image:url(./photo/benefit\ slider3.jpg);">
+                </div>
+                
+              </div>
+              <div class="content">
+                <div class="img-box"
+                  style="background-image:url(./photo/benefit\ slider4.jpg);">
+                </div>
+                
+              </div>
+              <div class="content">
+                <div class="img-box"
+                  style="background-image:url(./photo/benefit\ slider5.jpg);">
+                </div>
+                
+              </div>
+            </div>
+            <div class="view-all">
+              <p>view all</p>
+              <p class="next">&#62;</p>
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <div class="sec-travel">
+      <div class="section-wrap con-l">
+        <h1>travel & shopping</h1>
+        <div class="section-box-wrap row"> 
+          <div class="section-box section-box01 cell">
+            <div class="section">
+              <div class="img-box" style="background-image: url(./photo/travel01.jpg);"></div>
+              <div class="tag">
+                <div class="img-box" style="background-image: url(./photo/gift-tag.png);">
+                  <p>gift</p>
+                </div>
+              </div>
+              <div class="btn-name">
+                <p>라발스호텔</p>
+              </div>
+            </div>
+            <div class="text">
+              <div class="title">휴 패키지</div>
+              <div class="content">조식 2인 & 커피 2잔 & 티라미수 제공</div>
+            </div>
+          </div>
+          <div class="section-box section-box02 cell">
+            <div class="section">
+              <div class="img-box" style="background-image: url(./photo/travel02.jpg);"></div>
+              <div class="tag">
+                <div class="img-box" style="background-image: url(./photo/sale-tag.png);">
+                  <p>10%</p>
+                </div>
+              </div>
+              <div class="btn-name">
+                <p>만화화실 블리스</p>
+              </div>
+            </div>
+            <div class="text">
+              <div class="title">만화화실 원데이클래스</div>
+              <div class="content">10% 할인</div>
+            </div>
+          </div>
+          <div class="section-box section-box03 cell">
+            <div class="section">
+              <div class="img-box" style="background-image: url(./photo/travel03.jpg);"></div>
+              <div class="tag">
+                <div class="img-box" style="background-image: url(./photo/sale-tag.png);">
+                  <p>30%</p>
+                </div>
+              </div>
+              <div class="btn-name">
+                <p>뷰티화장품</p>
+              </div>
+            </div>
+            <div class="text">
+              <div class="title">로달리 퍼퓸 바디 미스트</div>
+              <div class="content">3종 구매시 30% 할인</div>
+            </div>
+          </div>
+          <div class="section-box section-box04 cell">
+            <div class="section">
+              <div class="img-box" style="background-image: url(./photo/travel04.jpg);"></div>
+              <div class="tag">
+                <div class="img-box" style="background-image: url(./photo/sale-tag.png);">
+                  <p>10%</p>
+                </div>
+              </div>
+              <div class="btn-name">
+                <p>전주 로니관광호텔</p>
+              </div>
+            </div>
+            <div class="text">
+              <div class="title">테라스 더블</div>
+              <div class="content">10% 할인</div>
+            </div>
+          </div>
+          <div class="section-box section-box05 cell">
+            <div class="section">
+              <div class="img-box" style="background-image: url(./photo/travel05.jpg);"></div>
+              <div class="tag">
+                <div class="img-box" style="background-image: url(./photo/sale-tag.png);">
+                  <p>10%</p>
+                </div>
+              </div>
+              <div class="btn-name">
+                <p>주식회사 올마이두이</p>
+              </div>
+            </div>
+            <div class="text">
+              <div class="title">온라인 뷰티 클래스</div>
+              <div class="content">10% 할인</div>
+            </div>
+          </div>
+          <div class="section-box section-box06 cell">
+            <div class="section">
+              <div class="img-box" style="background-image: url(./photo/travel06.jpg);"></div>
+              <div class="tag">
+                <div class="img-box" style="background-image: url(./photo/gift-tag.png);">
+                  <p>gift</p>
+                </div>
+              </div>
+              <div class="btn-name">
+                <p>닥토브</p>
+              </div>
+            </div>
+            <div class="text">
+              <div class="title">닥토브 비니페라 바이옴 비건 마스크팩</div>
+              <div class="content">제품 구매 시 바이옴 비건 마스크팩 1매 증정</div>
+            </div>
+          </div>
+          <div class="section-box section-box07 cell">
+            <div class="section">
+              <div class="img-box" style="background-image: url(./photo/travel07.jpg);"></div>
+              <div class="tag">
+                <div class="img-box" style="background-image: url(./photo/sale-tag.png);">
+                  <p>10%</p>
+                </div>
+              </div>
+              <div class="btn-name">
+                <p>탑영어태권도</p>
+              </div>
+            </div>
+            <div class="text">
+              <div class="title">외국인태권도체험프로그램</div>
+              <div class="content">태권도 체험 프로그램 10명이상 10% 할인</div>
+            </div>
+          </div>
+          <div class="section-box section-box08 cell">
+            <div class="section">
+              <div class="img-box" style="background-image: url(./photo/travel08.jpg);"></div>
+              <div class="tag">
+                <div class="img-box" style="background-image: url(./photo/gift-tag.png);">
+                  <p>gift</p>
+                </div>
+              </div>
+              <div class="btn-name">
+                <p>디어스 명동</p>
+              </div>
+            </div>
+            <div class="text">
+              <div class="title">브레베 객실 프로모션</div>
+              <div class="content">무료 조식 제공</div>
+            </div>
+          </div>
+        </div>
+        <div class="view-all">      
+          <p>view-all</p>
+          <p class="next">&#62;</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec-trend">
+      <div class="content-wrap con-s">
+        <div class="content">
+          <div class="trend-korea">
+            <h1>trend</h1>
+            <h1>korea</h1>
+          </div>
+          <div class="hashtags">
+            <div class="hashtag all">#all</div>
+            <div class="hashtag travel">#travel</div>
+            <div class="hashtag shopping">#shopping</div>
+          </div>
+          <div class="img-wrap img-wrap01 active">
+            <div class="main-img">
+              <div class="img-box" style="background-image: url(./photo/trend\ main-img1.jpg);">
+              </div>
+              <div class="shopping">
+                  <p><span>#shopping</span></p>
+              </div>
+              <div class="text">향으로 채우는 나만의 저녁시간</div>  
+            </div>
+            <div class="sub-img">
+              <div class="img-box" style="background-image: url(./photo/trend\ sub-img1.jpg);"></div>
+              <div class="shopping">
+                <p><span>#shopping</span></p>
+              </div>
+              <div class="text">봄을 얼굴에 담다. 나만의 봄 메이크업</div>
+            </div>
+          </div>
+          <div class="img-wrap img-wrap02">
+            <div class="main-img">
+              <div class="img-box" style="background-image: url(./photo/trend\ main-img2.jpg);">
+              </div>
+              <div class="shopping">
+                  <p><span>#travel</span></p>
+              </div>
+              <div class="text">서울 대표 관광 명소와 맛집 투어</div>  
+            </div>
+            <div class="sub-img">
+              <div class="img-box" style="background-image: url(./photo/trend\ sub-img2.jpg);"></div>
+              <div class="shopping">
+                <p><span>#travel</span></p>
+              </div>
+              <div class="text">스트레스는 이제 안녕! 새로운 나를 찾아서.</div>
+            </div>
+          </div>
+          <div class="img-wrap img-wrap03">
+            <div class="main-img">
+              <div class="img-box" style="background-image: url(./photo/trend\ main-img1.jpg);">
+              </div>
+              <div class="shopping">
+                  <p><span>#shopping</span></p>
+              </div>
+              <div class="text">향으로 채우는 나만의 저녁시간</div>  
+            </div>
+            <div class="sub-img">
+              <div class="img-box" style="background-image: url(./photo/trend\ sub-img1.jpg);"></div>
+              <div class="shopping">
+                <p><span>#shopping</span></p>
+              </div>
+              <div class="text">봄을 얼굴에 담다. 나만의 봄 메이크업</div>
+            </div>
+          </div>
+          <div class="view-all row">
+            <p class="cell">view all</p>
+            <p class="next cell">&#62;</p>
+          </div>
+        </div>
+        
+      </div>  
+    </div>
+
+    <div class="sec-location">
+      <div class="tv con-xl">
+        <div class="content-wrap">
+          <h1>featured location</h1>
+            <div class="slider-location">
+              <div class="content">
+                <div class="img-box" style="background-image: url(./photo/location01.jpg);"></div>
+                <div class="text">
+                  <h3>느림의 미학이 살아있는 제천</h3>
+                  <h4>#충북</h4>
+                </div>
+              </div>
+              <div class="content">
+                <div class="img-box" style="background-image: url(./photo/location02.jpg);"></div>
+                <div class="text">
+                  <h3>소담스런 봄날 같은 곡성</h3>
+                  <h4>#전남</h4>
+                </div>
+              </div>
+              <div class="content">
+                <div class="img-box" style="background-image: url(./photo/location03.jpg);"></div>
+                <div class="text">
+                  <h3>초록과 함께 쉬어가는 도시 단양</h3>
+                  <h4>#충북</h4>
+                </div>
+              </div>
+              <div class="content">
+                <div class="img-box" style="background-image: url(./photo/location04.jpg);"></div>
+                <div class="text">
+                  <h3>조화가 아름다운 도시 천연</h3>
+                  <h4>#충남</h4>
+                </div>
+              </div>
+              <div class="content">
+                <div class="img-box" style="background-image: url(./photo/location05.jpg);"></div>
+                <div class="text">
+                  <h3>과거와 현대가 어우러진 아름다움, 완주</h3>
+                  <h4>#전북</h4>
+                </div>
+              </div>
+            </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec-sns">
+      <div class="content-wrap">
+        <h1>SNS Now</h1>
+        <div class="slider-sns">
+          <div class="content">
+            <div class="img-box" style="background-image: url(./photo/sns01.jpeg);">
+              <div class="insta">
+                <div class="img-box" style="background-image: url(./photo/ico_sns_insta.png);"></div>
+              </div>
+            </div>
+            <div class="text">
+              <p>Danyang, a picturesque location
+              </p>
+            </div>
+          </div>
+          <div class="content">
+            <div class="img-box" style="background-image: url(./photo/sns02.jpeg);">
+              <div class="insta">
+                <div class="img-box" style="background-image: url(./photo/ico_sns_insta.png);"></div>
+              </div>
+            </div>
+            <div class="text">
+              <p>Danyang, a picturesque location
+              </p>
+            </div>
+          </div>
+          <div class="content">
+            <div class="img-box" style="background-image: url(./photo/sns03.jpeg);">
+              <div class="insta">
+                <div class="img-box" style="background-image: url(./photo/ico_sns_insta.png);"></div>
+              </div>
+            </div>
+            <div class="text">
+              <p>Danyang, a picturesque location
+              </p>
+            </div>
+          </div>
+          <div class="content">
+            <div class="img-box" style="background-image: url(./photo/sns04.png);">
+              <div class="insta">
+                <div class="img-box" style="background-image: url(./photo/ico_sns_insta.png);"></div>
+              </div>
+            </div>
+            <div class="text">
+              <p>Danyang, a picturesque location
+              </p>
+            </div>
+          </div>
+          <div class="content">
+            <div class="img-box" style="background-image: url(./photo/sns05.jpg);">
+              <div class="insta">
+                <div class="img-box" style="background-image: url(./photo/ico_sns_insta.png);"></div>
+              </div>
+            </div>
+            <div class="text">
+              <p>Danyang, a picturesque location
+              </p>
+            </div>
+          </div>
+          <div class="content">
+            <div class="img-box" style="background-image: url(./photo/sns06.jpg);">
+              <div class="insta">
+                <div class="img-box" style="background-image: url(./photo/ico_sns_insta.png);"></div>
+              </div>
+            </div>
+            <div class="text">
+              <p>Danyang, a picturesque location
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="bar-wrap row">
+          <div class="bar-box cell active">
+            <div class="bar"></div>
+          </div>
+          <div class="bar-box cell">
+            <div class="bar"></div>
+          </div>
+          <div class="bar-box cell">
+            <div class="bar"></div>
+          </div>
+          <div class="bar-box cell">
+            <div class="bar"></div>
+          </div>
+          <div class="bar-box cell">
+            <div class="bar"></div>
+          </div>
+          <div class="bar-box cell">
+            <div class="bar"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="promotion-box con-s">
+      <div class="img-box" style="background-image: url(./photo/promotion\ banner.jpg);"></div>
+    </div>
+
+    <div class="slider-support con-s">
+      <div class="content">
+        <img src="./photo/01.jpg" alt="">
+      </div>
+      <div class="content">
+        <img src="./photo/02.jpg" alt="">
+      </div>
+      <div class="content">
+        <img src="./photo/03.jpg" alt="">
+      </div>
+      <div class="content">
+        <img src="./photo/04.jpg" alt="">
+      </div>
+      <div class="content">
+        <img src="./photo/05.jpg" alt="">
+      </div>
+      <div class="content">
+        <img src="./photo/06.jpg" alt="">
+      </div>
+      <div class="content">
+        <img src="./photo/07.jpg" alt="">
+      </div>
+      <div class="content">
+        <img src="./photo/08.jpg" alt="">
+      </div>
+      <div class="content">
+        <img src="./photo/09.jpg" alt="">
+      </div>
+      <div class="content">
+        <img src="./photo/10.jpg" alt="">
+      </div>
+    </div>
+
+    <div class="footer con-xl">
+      <div class="footer-top row">
+        <div class="content con-s">
+          <h3 class="cell">FAQ</h3>
+          <h2 class="cell-r">1330</h2>
+          <h4 class="cell-r">korea travel hotline</h4>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div class="content-top con-s">
+          <div class="info">
+            <h3>코리아그랜드세일 통합 온라인 플랫폼 운영사무국</h3>
+            <div class="tel row cell">
+              <p class="cell">Tel.</p>
+              <p class="cell">070-7774-9932</p>
+            </div>
+            <div class="email row">
+              <p class="cell">Email.</p>
+              <p class="cell">kgs@vkc.or.kr</p>
+            </div>
+            <div class="address row">
+              <p class="cell">주소.</p>
+              <p class="cell">서울특별시 종로구 인사동 5길 29(인사동 194-27) 태화빌딩 802호 (재)한국방문위원회</p>
+            </div>
+          </div>
+          <div class="icon-box">
+            <div class="icon cell">
+              <div class="img-box" style="background-image: url(./photo/ico_face.png);"></div>
+              <div class="hover-box" style="background-image: url(./photo/ico_face_on.png);"></div>
+            </div>
+            <div class="icon cell">
+              <div class="img-box" style="background-image: url(./photo/ico_insta.png);"></div>
+              <div class="hover-box" style="background-image: url(./photo/ico_insta_on.png);"></div>
+            </div>
+            <div class="icon cell">
+              <div class="img-box" style="background-image: url(./photo/ico_youtube.png);"></div>
+              <div class="hover-box" style="background-image: url(./photo/ico_youtube_on.png);"></div>
+            </div>
+          </div>
+        </div>
+        <div class="content-bottom con-s">
+          <div class="info row">
+            <div class="host cell row">
+              <p class="cell">HOST</p>
+              <div class="host-img cell">
+                <div class="img-box" style="background-image: url(./photo/host01.png);"></div>
+              </div>
+              <div class="host-img cell">
+                <div class="img-box" style="background-image: url(./photo/host02.png);"></div>
+              </div>
+            </div>
+            <div class="family-site cell-r row">
+              <p class="cell">FAMILY SITE</p>
+              <div class="family-img cell">
+                <div class="img-box" style="background-image: url(./photo/familysite.png);"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="up-btn">
+    <div class="img-box" style="background-image: url(./photo/up.png);"></div>
+  </div>
+  <div class="travel-tip">
+    <div class="img-box" style="background-image: url(./photo/traveltip.jpeg);"></div>
+  </div>
+</body>
+
+</html>
+
+<!-- 링크 https://github.com/soyeeee2/git_repo.git -->

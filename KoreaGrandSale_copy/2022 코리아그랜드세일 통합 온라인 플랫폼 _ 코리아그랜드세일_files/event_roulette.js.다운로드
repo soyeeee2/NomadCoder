@@ -1,0 +1,438 @@
+function rouletteInit() {
+    var today = api.getToday();
+    var close_date = "2022-03-01";
+    if (close_date <= today) {
+        // alert("룰렛 이벤트 기간 종료");
+        return;
+    }
+    
+    var _tpl_roulette_list = $('#_tpl_roulette_list').html();
+
+    var _msg_no1 = "오늘 참여 가능한 룰렛 이벤트가 종료되었습니다. 내일 다시 방문하시면 1일 3회까지 이벤트 참여 가능합니다.";
+    var _msg_no2 = "이미 참여횟수가 소진되었거나 잠시 후 다시 참여해주세요.";
+    var _msg_email1 = "룰렛 이벤트에서 획득한 포인트 적립을 위해 이메일을 먼저 입력해주세요.";
+    var _msg_email2 = "이메일 형식에 맞춰서 입력하고 확인해주세요.";
+
+    switch (api.site.LANG) {
+        case 'en': 
+            _msg_no1 = "[영어]오늘 참여 가능한 룰렛 이벤트가 종료되었습니다. 내일 다시 방문하시면 1일 3회까지 이벤트 참여 가능합니다."; 
+            _msg_no2 = "Either you reached your participation quota or have to wait a little bit";
+            _msg_email1 = "Please enter email to accumulate points"; 
+            _msg_email2 = "Please check the email format";
+
+            break;
+        case 'jp': 
+            _msg_no1 = "[일본어]오늘 참여 가능한 룰렛 이벤트가 종료되었습니다. 내일 다시 방문하시면 1일 3회까지 이벤트 참여 가능합니다."; 
+            _msg_no2 = "すでに参加回数が消失した場合、しばらくしてからもう一度参加してください。";
+            _msg_email1 = "ルーレットイベントで獲得したポイント受け取るためのメールアドレスを入力してください。"; 
+            _msg_email2 = "メールの形式に合わせて入力し、ご確認ください。";
+
+            break;
+        case 'cn': 
+            _msg_no1 = "[간체]오늘 참여 가능한 룰렛 이벤트가 종료되었습니다. 내일 다시 방문하시면 1일 3회까지 이벤트 참여 가능합니다."; 
+            _msg_no2 = "参与次数已耗尽，请稍后再次参与";
+            _msg_email1 = "为了累积在转盘活动中所获的积分，请先输入邮箱地址"; 
+            _msg_email2 = "请按照邮箱格式输入并确认";
+
+            break;
+        case 'tw': 
+            _msg_no1 = "[번체]오늘 참여 가능한 룰렛 이벤트가 종료되었습니다. 내일 다시 방문하시면 1일 3회까지 이벤트 참여 가능합니다.";
+            _msg_no2 = "若已經超過參與次數上限，請於稍後再進行確認。";
+            _msg_email1 = "為了確認在轉盤活動所獲得的累積點數，請先輸入Email。"; 
+            _msg_email2 = "請依照Email樣式輸入並確認。";
+
+            break;
+    }
+
+    var _ga = {
+        sendGA: function (event, label) {
+            var device = $(window).innerWidth() > 767 ? 'w_' : 'm_';
+            var lang = api.site.LANG + '_';
+            // console.log(device + lang + label);
+            gtag('event', 'button', { 'event_category': event, 'event_label': device+lang+label });
+        }
+    }
+
+    function makeRouletteIco() { 
+        var ico = '<button class="btn_roulette_open">close</button>'
+        $('.fixed_wrap').prepend(ico);
+        var contents = '<div class="roulette_bottom_banner roulette_wrap"><button class="bottom_banner_close btn_roulette_close">x</button> ' + $('.roulette_top').html() + '</div>';
+        $('footer').append(contents);
+    }
+    if (api.site.LANG != 'kr') {
+        makeRouletteIco();
+    }
+
+    var consts = {
+        _screenW : $(window).width(),
+    }
+    function makeRoulette() {
+        var emailInput = "";
+        var _screenW = $(window).width();
+
+        $('#input_roulette_game_email').on('change keyup keydown paste', function (e) { 
+            $(this).val($(this).val().replace(' ', ''));
+        });
+
+        //이메일 입력 영역 포커스 시(높이부여)
+        $('#input_roulette_game_email, #input_roulette_point_email').on('focus', function (e) {
+            if (_screenW < 767) {
+                $('#roulette').css('height', window.innerHeight);
+            }
+        }).on('focusout', function (e) {
+            if (_screenW < 767) {
+                $('#roulette').css('height', '100%');
+            }
+        });
+
+        if ($('#roulette').length > 0) {
+            $('#btn_roulette_start').on('click', function() {
+                // 모바일 포커스 이동
+                _ga.sendGA('룰렛 이벤트 스핀 버튼','룰렛스핀버튼');
+                var screenW = $(window).width();
+                var focusOffset = $('.roulette_top').height();
+                if (screenW < 767) {
+                    $('#roulette').animate({
+                        scrollTop: focusOffset
+                    }, 10);
+                }
+
+
+                emailInput = document.getElementById('input_roulette_game_email').value;
+                if (emailCheck(emailInput)) {
+                    $('.roulette_game').css('pointer-events', 'none');
+                    document.getElementById('input_roulette_point_email').value = emailInput;
+
+                    rouletteStart(emailInput);
+                }
+            });
+            $('#btn_roulette_point').on('click', function() {
+                _ga.sendGA('이메일 조회버튼','이메일조회버튼');
+                emailInput = document.getElementById('input_roulette_point_email').value;
+                document.getElementById('input_roulette_game_email').value = emailInput;
+
+
+                if ($('.point_box.view').hasClass('on')) {
+                    return
+                }
+
+                $('.point_num_all').text(0);
+                $('#point_list').empty();
+
+                if (emailCheck(emailInput)) {
+                    roulettePoint(emailInput);
+
+                    $('.point_box.voucher').toggleClass('on');
+                    $('.point_box.view').toggleClass('on');
+                    $('.page_point .input_wrap').addClass('disable');
+                    $('.page_point .input_wrap input').attr('disabled', true);
+                }
+            });
+        }
+
+        var changePage = {
+            goPoint: function () {
+                _ga.sendGA('룰렛 이벤트 포인트 조회버튼','조회버튼');
+                $('#roulette').scrollTop(0);
+                $('.page_init').css('visibility', 'hidden');
+                $('.page_point').css('visibility', 'visible');
+                $('.game_area').removeClass('disable');
+                $('.page_point').removeClass('off');
+                $('.page_point .input_wrap').removeClass('disable');
+                $('.page_point .input_wrap input').attr('disabled', false);
+            },
+            goGame: function () { 
+                $('.page_point').css('visibility', 'hidden');
+                $('.page_init').css('visibility', 'visible');
+                $('.point_box.voucher').toggleClass('on');
+                $('.point_box.view').toggleClass('on');
+                enableRoulette();
+            }
+        }
+
+        $('#btn_go_point').on('click', function () { changePage.goPoint(); });
+        $('.btn_go_back').on('click', function () { changePage.goGame(); });
+
+
+        $('.btn_float a[href="javascript:;"]').on('click', function (e) {
+            e.preventDefault();
+            enableRoulette();
+            _ga.sendGA('룰렛 이벤트 플러팅 배너', '룰렛플러팅');
+            toggleRoulette('#roulette');
+        });
+        $('.btn_roulette_open').on('click', function (e) {
+            enableRoulette();
+            toggleRoulette('#roulette');
+        });
+        $('.btn_roulette_open_evt_page').css('cursor', 'pointer');
+        $('.btn_roulette_open_evt_page').on('click', function (e) {
+            _ga.sendGA('룰렛 이벤트 페이지 상세', '룰렛상세페이지');
+            enableRoulette();
+            toggleRoulette('#roulette');
+        });
+    }
+
+    function emailCheck(email) {
+        if (email.length < 1) {
+            alert(_msg_email1);
+            return false;
+        }
+        
+        if (!/^([0-9a-zA-Z_\.-]+)@([0-9a-zA-Z_-]+)(\.[0-9a-zA-Z_-]+){1,2}$/.test(email)) {
+            alert(_msg_email2);
+            return false;
+        }
+
+        return true;
+    }
+
+    function rouletteStart(email) {
+        function checkDevice() { 
+            // 기기 구분하기
+            var parser = new UAParser();
+            var os = parser.getOS();
+            if (os.name == "iOS" || os.name == "Android") {
+                return 'MO';
+            } else { return 'PC'}
+        }
+
+        var params = {};
+        params._EMAIL = email;
+        params._DEVICE = checkDevice();
+        // params._POINT = calculateRoulette();
+        api.ajaxCmd('/event/rouletteSave', params, function(rtn){
+            if (rtn.status == "OK") {
+                if (rtn.points != null) {
+                    // 포인트
+                    var resultIdx = rtn.points.index;
+                    var resultPoint = rtn.points.ramdom_point;
+                    console.log(
+                        "index : ", resultIdx, 
+                        "point : ", resultPoint
+                    ); 
+                }
+
+                if (rtn.remaining != null) {
+                    // 기회가 남았을 때
+                    var count = rtn.remaining[0]['remaining_cnt'];
+
+                    // 룰렛모션
+                    $('.page_init .roulette_desc').css('opacity',1);
+                    $('.roulette_result').css('opacity', 0);
+                    $('.btn_roulette_go').css('pointer-events', 'none');
+                    rotationRoulette(resultIdx, resultPoint, count);
+                }
+            } else {
+                disableRoullette();
+
+                if (rtn.status == "NO_ERROR" || rtn.status == "EMAIL_NO") {
+                    alert(_msg_no2);
+                }
+            }
+        });
+    }
+
+    // 룰렛모션
+    function rotationRoulette(resultIdx, resultPoint, count){
+        var rotate = 5; //회전수
+        var angle;    
+
+        if(resultIdx == 0) angle = randomFn(1, 44);    // 1 point
+        if(resultIdx == 1) angle = randomFn(46, 89);   // 50 point
+        if(resultIdx == 2) angle = randomFn(91, 134);  // 5 point
+        if(resultIdx == 3) angle = randomFn(136, 179); // 10 point
+        if(resultIdx == 4) angle = randomFn(181, 224); // 1 point
+        if(resultIdx == 5) angle = randomFn(226, 269); // 20 point
+        if(resultIdx == 6) angle = randomFn(271, 314); // 5 point
+        if(resultIdx == 7) angle = randomFn(316, 359); // 10 point
+
+        $(".roulette_cont").rotate({
+            duration:3000, //회전속도
+            angle:0, 
+            animateTo:360 * rotate - angle,
+            center: ["50%", "50%"],
+            easing: $.easing.easeInOutElastic,
+            callback: function(){ 
+                endRoulette(resultPoint, count);
+            },
+        });
+    }
+    // 랜덤범위지정
+    function randomFn(min, max){
+        var random = Math.floor(Math.random()*(max-min+1)) + min;
+        return random;  
+    }
+
+    function disableRoullette() { 
+        $('.game_area').addClass('disable');
+        $('.page_init .header_input_box').hide();
+        $('.page_init .step_end').show();
+        $('.page_init #btn_go_back').show();
+    }
+
+    function enableRoulette() { 
+        $('.page_point .input_wrap').removeClass('disable');
+        $('.page_point').addClass('off');
+        $('.game_area').addClass('before_game');
+        $('#roulette').scrollTop(0);
+        $('.page_point').css('visibility', 'hidden');
+        $('.page_point').addClass('off');
+        $('.page_init').css('visibility', 'visible');
+        $('.roulette_game').removeClass('disable');
+        $('.game_area').removeClass('disable');
+        $('#input_roulette_game_email').val('');
+        $('#input_roulette_point_email').val('');
+        $('.page_init .header_input_box').hide();
+        $('.step_init').show();
+        $('.page_init #btn_go_back').hide();
+        $('.roulette_game').css('pointer-events', 'auto');
+        $('.point_box.voucher').addClass('on');
+        $('.point_box.view').removeClass('on');
+        $('.page_init .roulette_desc').css('opacity',1);
+        $('.roulette_result').css('opacity', 0);
+        // 포인트 섹션
+        // $('#btn_roulette_point').css('pointer-events', 'auto');
+    }
+
+    // 룰렛모션끝
+    function endRoulette(resultPoint, count) {
+        $('.page_init .game_area').removeClass('before_game');
+        $('.page_init .roulette_desc').css('opacity',0);
+        $('.roulette_result').css('opacity', 1);
+
+        $(".roulette_result .num").text(resultPoint);
+        $(".try_num").text(count);
+        
+        $('.page_init .header_input_box').hide();
+        $('.btn_roulette_go').css('pointer-events', 'auto');
+        $('.roulette_game').css('pointer-events', 'auto');
+
+        $('.page_init #btn_go_back').show();
+
+        if (count === 0) {
+            // $('.step_end').show();
+            disableRoullette();
+        } else { 
+            $('.step_more').show();
+        }
+    }
+
+    function roulettePoint(email) {
+        // 포인트 조회하기
+        var params = {};
+        params._EMAIL = email;
+        api.ajaxCmd('/event/rouletteList', params, function(rtn){
+            console.log(rtn);
+
+            if (rtn.status == "OK") {
+                if (rtn.data.list.length) {
+                    $('.point_num_all').text(api.comma(rtn.data.all_point[0].ALL_POINT));
+                    $('#point_list').html(api.html_merge(_tpl_roulette_list, rtn.data.list));
+                }
+            } else if (rtn.status == "EMAIL_NO") {
+                alert(_msg_no2);
+            }
+        }); 
+    }
+
+    // 룰렛 팝업 없을 때 리턴
+    if ($('#roulette').length == 0) {return}
+    makeRoulette();
+    
+
+
+    var st = $(window).scrollTop();
+    var screenW = $(window).width();
+    var isOpen = false;
+    var rouletteOpen = api.global_params.pagename === 'MAIN' && handleCookie.getCookie('roulette_exp') !== 'y' ? true : false;
+    // var rouletteOpen = true;
+
+    $('.roulette_bottom_banner').on('click', function (e) {
+        handleRouletteCookie.setCookie('roulette_exp', 'y');
+        var target = e.target;
+        if (target.className.indexOf('bottom_banner_close') !== 0 ) {
+            isOpen = true;
+            toggleRoulette('#roulette', 'mo_open');
+        }        
+        $('.roulette_bottom_banner').removeClass('on')
+    });
+
+    function toggleRoulette(id, type) {
+        if ($(id).is(":visible")) {
+            // close
+            $(".layer_popup").off('click');
+            $(id).fadeOut("fast", function(){
+                $(this).removeClass("on");
+                $('body').removeClass('popup-open');
+            });
+        } else {
+            // open
+            _ga.sendGA('룰렛 이벤트 팝업','룰렛팝업');
+            if (type === 'mo_open') {
+                $('.page_point').addClass('off');
+                $(id).css('top', 'calc(100% - 51.6666vw)');
+                $(id).show();
+                $(id).addClass('on');
+                $(id).css('top', '0');
+            } else { 
+                $(id).show();
+                $(id).addClass('on');
+            }
+            
+            $("body").addClass('popup-open');
+            $('.layer_popup').on('click', function(e) {
+                var _target = $(e.target);
+                if(_target.is($('.layer_outer'))) {
+                    toggleRoulette(id);
+                }
+            });
+        }
+    }
+
+    function onScrollPopup() { 
+        st = $(window).scrollTop();
+
+        // 웹/모 분기
+        var isMo = screenW > 767 ? false : true;
+        var startOffset = isMo ? 400 : 600;
+
+        if (st > startOffset && !isOpen) {
+            if (isMo) {
+                // mo
+                $('.roulette_bottom_banner').addClass('on');
+            } else { 
+                // pc
+                isOpen = true;
+                toggleRoulette('#roulette');
+                $('#dimLayer').css('display', 'none');
+                handleRouletteCookie.setCookie('roulette_exp','y');
+            }
+        }
+    }
+    
+    if (rouletteOpen) { 
+        $(window).on('scroll', function () {
+            onScrollPopup();
+        });
+    }
+    
+
+    $(window).on('resize', function (e) { 
+        screenW = $(window).width();
+    })
+}
+
+var handleRouletteCookie = {
+    setCookie : function(name, val) {
+        var date = kgs_date;
+        date.setHours(24)
+        date.setMinutes(0);
+        date.setSeconds(0);
+        document.cookie = name + '=' + val + ';expires=' + date.toUTCString() + ';path=/';
+    },
+    getCookie : function(name) {
+        var value = document.cookie.match('(^|;) ?' + name + '=([^;]*)(;|$)');
+        return value? value[2] : null;
+    }
+}
+

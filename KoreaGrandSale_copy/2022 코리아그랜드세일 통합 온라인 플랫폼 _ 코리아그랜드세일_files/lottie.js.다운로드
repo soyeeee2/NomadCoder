@@ -1,0 +1,42 @@
+function lottieAni() {
+  var jsonFile = '';
+
+  function getWidth() { 
+    if ($(window).width() < 767) {
+      return true
+    } else { 
+      return false
+    }
+  }
+
+  function getFile(isMo) { 
+    jsonFile = isMo ? '/static/img/fireworks_m.json' : '/static/img/fireworks.json'
+  }
+
+  var isMo = getWidth();
+
+  getFile(getWidth());
+  playAnimation(jsonFile)
+  
+  $(window).on('resize', function () {
+    if (isMo != getWidth()) { 
+      animation.destroy();
+      isMo = getWidth();
+      getFile(isMo);
+      playAnimation(jsonFile);
+    } 
+  });
+
+  function playAnimation(jsonFile) { 
+    animation= bodymovin.loadAnimation({
+      container: document.querySelector('.lottie'), // Required
+      path: jsonFile,
+      renderer: 'svg',
+      loop: true,
+      autoplay: true,
+      name: "Fireworks",
+    });
+  }
+}
+
+

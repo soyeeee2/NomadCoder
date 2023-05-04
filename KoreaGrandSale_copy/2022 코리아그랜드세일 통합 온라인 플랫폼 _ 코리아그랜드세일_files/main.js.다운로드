@@ -1,0 +1,699 @@
+var kgs_date = new Date(); //현재 년월일시간 GTM+0900 (한국 표준시)
+
+var START_MONTH = '2021-09';
+var SHOP_MONTH;
+var BENEFIT_DATA, FESTIVAL_DATA;
+
+function init_page(){
+    
+    api.global_params.pagename = 'MAIN';
+
+    var _tpl_footerbanner = $('#_tpl_footerbanner').html();
+    api.ajaxCmd('/common/pageinfo', {}, function(rtn){
+        //console.log(rtn);
+        if (rtn.data.footerbanner.length) $('._footerbanner').html(api.html_merge(_tpl_footerbanner, rtn.data.footerbanner));
+    });
+
+
+    var _tpl = {};
+    _tpl.kv = $('#_tpl_kv').html();
+    _tpl.sns = $('#_tpl_sns').html();
+    _tpl.benefit = $('#_tpl_benefit').html();
+    _tpl.shop = $('#_tpl_shop').html();
+    _tpl.location = $('#_tpl_location').html();
+    _tpl.trend = $('#_tpl_trend').html();
+    _tpl.calendar_benefit_text = $('#_tpl_calendar_benefit_text').html();
+    _tpl.calendar_benefit_image = $('#_tpl_calendar_benefit_image').html();
+    _tpl.calendar_event_text = $('#_tpl_calendar_event_text').html();
+    _tpl.calendar_event_image = $('#_tpl_calendar_event_image').html();    
+
+    var _y = api.getMonth().split("-")[0],
+        _m = parseInt(api.getMonth().split("-")[1]);
+    SHOP_MONTH = _y+"-"+ ("0"+_m).slice(-2);
+
+    calendar();
+    function calendar(_month) {
+        if (!_month) _month = SHOP_MONTH;
+        api.ajaxCmd('/calendar/info', {'SHOP_MONTH':_month, 'FESTIVAL_YN':'Y'}, function(rtn){
+
+            //캘린더로 넘기는 선택된 월 생성
+            var _param_month = _month.split("-")[0];
+            _param_month += '-' + ('0'+((parseInt(_month.split("-")[1])%2 == 0)? parseInt(_month.split("-")[1])-1: parseInt(_month.split("-")[1]))).slice(-2);
+
+            for(var _n=0;_n<rtn.data.benefit.length;_n++){
+                rtn.data.benefit[_n]['ON'] = (_n == 0)? 'on':'';
+                rtn.data.benefit[_n]['MONTH'] = _param_month;
+            }
+            $('.cal_wrap .benefits .info_txt').html(api.html_merge(_tpl.calendar_benefit_text, rtn.data.benefit));
+            $('.cal_wrap .benefits .swiper-wrapper').html(api.html_merge(_tpl.calendar_benefit_image, rtn.data.benefit));
+            BENEFIT_DATA = rtn.data.benefit;
+
+            for(var _n=0;_n<rtn.data.event.length;_n++){
+                rtn.data.event[_n]['ON'] = (_n == 0)? 'on':'';
+                rtn.data.event[_n]['MONTH'] = _param_month;
+            }
+            $('.cal_wrap .festival .info_txt').html(api.html_merge(_tpl.calendar_event_text, rtn.data.event));
+            $('.cal_wrap .festival .swiper-wrapper').html(api.html_merge(_tpl.calendar_event_image, rtn.data.event));
+            FESTIVAL_DATA = rtn.data.event;
+
+            //TODO : 위 데이터 존재 여부에 따라 버튼을 죽이던 로드를 시키던.
+            SHOP_MONTH = _month;
+
+            init_calendar(); //캘린더 init
+
+        });
+    }
+    
+    var trends;//trand data
+    var featured_1, featured_2;
+    api.ajaxCmd('/common/main', {}, function(rtn){
+        console.log(rtn)
+        //SNS
+        if (rtn.data.kv.length) {
+            for(var _n=0;_n<rtn.data.kv.length;_n++){
+                rtn.data.kv[_n]['PC_MEDIA_IMAGE'] = JSON.parse(rtn.data.kv[_n].PC_MEDIA).image;
+            }
+            $('.main_slider .swiper-wrapper').html(api.html_merge(_tpl.kv, rtn.data.kv));
+
+            var num1='';
+            var num2 = '';
+            
+            var now;
+            var dDay = '2022/01/13 00:00:00';
+            CountDownTimer(dDay);
+            
+            // 카운터
+            function CountDownTimer(dday) {
+                var countDownDate = new Date(dday).getTime();
+                serverToday(); // 서버시간 가져오기
+                // now = new Date('2022/01/13 00:5:10').getTime();
+                var distance = countDownDate - now > 0 ? countDownDate - now :0;
+                
+                
+                var days = Math.ceil(distance / (1000 * 60 * 60 * 24)).toString();
+                if (days < 10) days = "0" + days;
+
+                num1 = days.substr(0,1)
+                num2 = days.substr(1,1)
+                
+                function showRemaining() {
+                    if (days < 00) {
+                        days = 00;
+                    }
+                }
+                showRemaining();
+            }
+
+            // 서버시간
+            function serverToday(){ 
+                try {        
+                    var st = xmlHttp.getResponseHeader("Date");
+                    var curDate = new Date(st);  
+                    
+                    var xmlHttp, ct=(new Date(st)).getTime(); 
+                    //분기하지 않으면 IE에서만 작동된다. 
+                    if (window.XMLHttpRequest) { // IE 7.0 이상, 크롬, 파이어폭스일 경우 분기 
+                        xmlHttp = new XMLHttpRequest(); 
+                        xmlHttp.open('HEAD',window.location.href.toString()+'?t='+ct,false);
+                        xmlHttp.setRequestHeader("Content-Type", "text/html"); 
+                        xmlHttp.send(); 
+                    }else if (window.ActiveXObject) { 
+                        xmlHttp = new ActiveXObject('Msxml2.XMLHTTP');
+                        xmlHttp.open('HEAD',window.location.href.toString()+'?t='+ct,false);
+                        xmlHttp.setRequestHeader("Content-Type", "text/html"); 
+                        xmlHttp.send(); 
+                    } 
+                    
+                    now = curDate.getTime();
+                    console.log("서버시간 : ", curDate);
+                }
+                catch(err) {  
+                    //console.log(err)
+                    now = new Date().getTime();
+                    // console.log("로컬시간"); 
+                }  
+                return now; 
+            }
+
+            // 카운트다운
+            var KEYWORD = 'KoreaGrandSale';
+            // switch (api.site.LANG) {
+            //     case 'en': KEYWORD = "KoreaGrandSale"; break;
+            //     case 'jp': KEYWORD = "コリアグランドセール"; break;
+            //     case 'cn': KEYWORD = "韩国购物季"; break;
+            //     case 'tw': KEYWORD = "韓國購物季"; break;
+            // }
+
+            var countdownDiv = '.main_slider .swiper-wrapper #'+KEYWORD;
+            var countDownCont = '<div class="countdown"><span class="num_'+num1+'">1</span><span class="num_'+num2+'">2</span></div>'
+            $(countdownDiv).append(countDownCont)
+            var isKvRolling = rtn.data.kv.length > 1 ? true : false;
+            mainSliderInit(isKvRolling);
+        }
+
+        //TREND
+        trends = rtn.data.trends;
+        // console.log(trends);
+        for (key in trends) {
+            for (var _r=trends[key].length;_r<2;_r++) trends[key].push({'THUMB':''});
+            if (trends[key].length) {
+                for(var _n=0;_n<trends[key].length;_n++){
+                    trends[key][_n]['THUMB'] = (_n%2 == 0)? 'thumb_s':'thumb_l';
+                }
+            }
+        };
+        $('.sec_trend .thumb_list').html(api.html_merge(_tpl.trend, trends.ALL));
+        
+
+        //FEATURED
+        if (rtn.data.featured_1.length) {
+            /*
+            for(var _n=0;_n<rtn.data.featured_1.length;_n++){
+                rtn.data.featured_1[_n]['ADDR_DISP'] = rtn.data.featured_1[_n].ADDR.split(' ')[0];
+            }
+            featured_1 = rtn.data.featured_1;
+            for(var _n=0;_n<rtn.data.featured_2.length;_n++){
+                rtn.data.featured_2[_n]['ADDR_DISP'] = rtn.data.featured_2[_n].ADDR.split(' ')[0];
+            }
+            featured_2 = rtn.data.featured_2;
+            */
+            $('.location_slider .swiper-wrapper').html(api.html_merge(_tpl.location, rtn.data.featured_1));
+            locationSliderInit();
+        }
+        
+        //BENEFIT
+        if (rtn.data.benefit.length) {
+            $('.special_slider .swiper-wrapper').html(api.html_merge(_tpl.benefit, rtn.data.benefit));
+            specialSliderInit();
+        }
+
+
+        //SHOP
+        //타겟, 링크, DETAIL2, 혜택
+        console.log(api.site);
+        for(var _n=0;_n<rtn.data.shop.length;_n++){
+            var benefit = JSON.parse(rtn.data.shop[_n].PROMOTION_DETAIL);
+
+            //rtn.data.shop[_n].DETAIL2 = (api.site.LANG == 'kr')? benefit[0].detail2:benefit[0]['detail2_'+api.site.LANG];
+            rtn.data.shop[_n].DETAIL2 = rtn.data.shop[_n].PRODUCT_INFO; 
+            var _benefit_html = [];
+            if (rtn.data.shop[_n].PROMOTION_PERIOD_TO >= api.getToday()) {
+                for (var _b=0;_b < benefit.length;_b++) {
+                    if (benefit[_b].type == 'discount') _benefit_html.push('<span class="discount">'+benefit[_b].detail+'</span>');
+                    //if (benefit[_b].type == 'gift') _benefit_html.push('<span class="gift">'+benefit[_b].detail+'</span>');
+                    if (benefit[_b].type == 'gift') _benefit_html.push('<span class="gift">GIFT</span>');
+                }
+            }
+            rtn.data.shop[_n].BENEFIT = _benefit_html.join('');
+        }
+        $('.prod_list').html(api.html_merge(_tpl.shop, rtn.data.shop));
+
+        //SNS
+        if (rtn.data.sns.length) {
+            $('.sns_slider .swiper-wrapper').html(api.html_merge(_tpl.sns, rtn.data.sns));
+            snsSliderInit();
+        }
+
+        //메인팝업
+        if (rtn.data.popup.length) {
+            var _tpl_main_popup = $('#_tpl_main_popup').html();
+            $('.main_popup').html(api.html_merge(_tpl_main_popup, rtn.data.popup[0]));
+            toggleMainPopup();
+        }
+
+        $('.btn_benefit').on("click", function(){
+            var seq = $(this).data('id');
+            var _url = "/benefit?GUBUN_SUB=" + seq;
+            location.href = _url;
+        });
+    });
+    
+    bannerSliderInit();
+
+    $(".sec_cal").on('click', '.secondweek', function() {
+        location.href = "/calendar";
+    });
+
+    //이전/다음 월
+    $(".sec_cal").on('click','.cal_nav a',function(){
+        if ($(this).attr('disabled')) return;
+        var _y = parseInt(SHOP_MONTH.split("-")[0]),
+            _m = parseInt(SHOP_MONTH.split("-")[1]);
+        if ($(this).hasClass('go-prev')) {_m--;if (_m == 0) {_y--;_m = 12;}
+        } else {_m++;if (_m > 12) {_y++;_m = 1;}}
+
+        // 달력 2월까지만 표시
+        if(_y==2022 && _m==02) {
+            $('.nav-btn.go-next').attr('disabled', 'disabled');
+            $('.nav-btn.go-next').addClass('disabled');
+        } else {
+            $('.nav-btn.go-next').attr('disabled', false);
+            $('.nav-btn.go-next').removeClass('disabled');
+        }
+
+        $('.dates').removeClass('firstweek secondweek thirdweek fourthweek fifthweek sixthweek');
+        calendar(_y + '-' + ("0" + _m).slice(-2));
+    });
+    //달력 크게 보기
+    $(".sec_cal").on('click','.cal_area .btn_cal_open',function(){
+        if($(this).hasClass('on')){
+            $(this).removeClass('on');
+            $(".sec_cal .cal_wrap .cal_area").removeClass('on');
+        }else{
+            $(this).addClass('on');
+            $(".sec_cal .cal_wrap .cal_area").addClass('on');
+        }
+        
+    })
+
+    //Trend filter
+    $('.sec_trend .filter_list li button').click(function(){
+        $('.sec_trend .thumb_list').html(api.html_merge(_tpl.trend, trends[$(this).data('filter')]));
+    });
+
+    //Featured Location filter
+    $('.sec_location .filter_list li button').click(function(){
+        var featured = ($(this).data('filter') == 'recent')? featured_2:featured_1;
+        $('.location_slider .swiper-wrapper').html(api.html_merge(_tpl.location, featured));
+        locationSliderInit();        
+    });
+
+}
+var calswiper1, calswiper2;
+function init_calendar(){
+    
+    try {calswiper1.destroy(true, true);}catch(e){}
+    try {calswiper2.destroy(false, false);}catch(e){}
+
+    //캘린더 로드
+    renderCalender();
+
+    /* 갤린더 슬라이드 1 */    
+    calswiper1 = new Swiper('.sec_cal .benefits .swiper-container', {
+        slidesPerView: 1,
+        spaceBetween: 5,
+        freeMode: false,
+        autoplay:true,
+        init:false,
+        pagination: {
+            el: '.sec_cal .benefits .swiper-pagination',
+            clickable: true,
+        },
+        //마우스 휠 추가
+        //mousewheel: true,
+        direction: 'horizontal',
+        
+        // 슬라이드모션후
+        on: {
+            init : function(){
+                if (BENEFIT_DATA.length) setCalendarDot('red', {'FROM':BENEFIT_DATA[0].PROMOTION_PERIOD_FROM, 'TO':BENEFIT_DATA[0].PROMOTION_PERIOD_TO});
+            },
+            slideChangeTransitionStart: function(){
+                //console.log('kgs_cal2_idx', this.activeIndex);
+                $(".cal_wrap .benefits ul.info_txt li").removeClass('on');
+                $(".cal_wrap .benefits ul.info_txt li").eq(this.activeIndex).addClass('on');
+                setCalendarDot('red', {'FROM':BENEFIT_DATA[this.activeIndex].PROMOTION_PERIOD_FROM, 'TO':BENEFIT_DATA[this.activeIndex].PROMOTION_PERIOD_TO});
+            }
+        },   
+        
+    });
+    if($('.sec_cal .benefits .swiper-container').find('.swiper-slide').length==0) {
+        $('.sec_cal .benefits').addClass('no_data');
+    } else {
+        $('.sec_cal .benefits').removeClass('no_data');
+        calswiper1.init();
+        calswiper1.update();
+    }
+    
+
+    /* 갤린더 슬라이드 2 */
+    calswiper2 = new Swiper('.sec_cal .festival .swiper-container', {
+        slidesPerView: 1,
+        spaceBetween: 5,
+        freeMode: false,
+        autoplay:true,
+        init:false,
+        pagination: {
+            el: '.sec_cal .festival .swiper-pagination',
+            clickable: true,
+        },
+        //마우스 휠 추가
+        //mousewheel: true,
+        direction: 'horizontal',
+        
+        // 슬라이드모션후
+        on: {
+            init: function () {
+                // 축제 데이터 렌더X
+                // if (FESTIVAL_DATA.length) setCalendarDot('blue', {'FROM':FESTIVAL_DATA[0].OPEN_DATE, 'TO':FESTIVAL_DATA[0].END_DATE});
+            },
+            slideChangeTransitionStart: function(){
+                $(".cal_wrap .festival ul.info_txt li").removeClass('on');
+                $(".cal_wrap .festival ul.info_txt li").eq(this.activeIndex).addClass('on');
+                // 축제 데이터 렌더X
+                // setCalendarDot('blue', {'FROM':FESTIVAL_DATA[this.activeIndex].OPEN_DATE, 'TO':FESTIVAL_DATA[this.activeIndex].END_DATE});
+            }
+        },   
+        
+    });
+    if($('.sec_cal .festival .swiper-container').find('.swiper-slide').length==0) {
+        $('.sec_cal .festival').addClass('no_data');
+    } else {
+        $('.sec_cal .festival').removeClass('no_data');
+        calswiper2.init();
+        calswiper2.update();
+    }
+    
+
+}
+
+var typeSelecter = 'M'
+var mainSlider;
+function mainSliderInit(isKvRolling) {
+    mainSlider = new Swiper('.main_slider', {
+        slidesPerView: 'auto',
+        centeredSlides: true,
+        spaceBetween: 24,
+        loop: isKvRolling,
+        pagination: {
+            el: ".main_slider .swiper-pagination",
+        },
+        navigation: {
+            nextEl: ".main_slider .swiper-button-next",
+            prevEl: ".main_slider .swiper-button-prev",
+        },
+        autoplay: {
+            delay: 6000,
+            disableOnInteraction: false,
+        },
+        pauseOnMouseEnter: false,
+        on: {
+            init: function() {
+                // youtube
+                var youtubeSlide = $('.main_slider .slide_cont.' + typeSelecter);
+
+                youtubeSlide.each(function(idx, item) {
+                    var youtubeId = $(item).attr('href');
+                    $(item).attr('vidId', youtubeId);
+                    $(item).attr('href', 'javascript:;');
+
+                    $(item).on('click', function() {
+                        var vidId = $(this).attr('vidId');
+                        if (vidId.indexOf('.mp4') == -1) {
+                            // youtube
+                            function readyPlayer() {
+                                YTplayer.cueVideoById({
+                                    videoId: vidId,
+                                    suggestedQuality: 'large'
+                                });
+                            }
+                            if (playerReady == true) {
+                                readyPlayer();
+                            } else {
+                                setTimeout(function() {
+                                    readyPlayer();
+                                }, 1000)
+                            }
+                            toggleVidPopup("#popup_3");
+                            mainSlider.autoplay.stop();
+                        } else {
+                            $('.mp4_wrapper').attr('src', vidId);
+                            toggleVidPopup("#popup_4");
+                            document.querySelector('.mp4_wrapper').play();
+                        }
+                    });
+                });
+            },
+        },
+    });
+}
+// 영상 레이어 팝업
+// var dimLayer = "<div id='dimLayer'></div>";
+
+// function toggleVidPopup(id) {
+//     // 팝업 열고 닫기	togglePopup(#id)
+//     // 팝업 창 전환	togglePopup(#current_id, #open_id)
+//     if ($(id).is(":visible")) {
+//         $(id).fadeOut("fast").removeClass("on");
+//         $("#dimLayer").fadeOut("fast", function() {
+//             $("#dimLayer").remove();
+//         });
+//         try {
+//             player.pauseVideo(); // 유튜브 멈춤
+//             player.removeCueRange();
+//             console.log(player);
+//             document.querySelector('.mp4_wrapper').pause(); // 영상 멈춤
+//         } catch (e) {
+//             console.log(e);
+//         }
+//     } else {
+//         $("#container").append(dimLayer);
+//         popSetPos(id);
+//         $(id).fadeIn("fast").addClass("on");
+
+//     }
+// }
+
+// function onYouTubeIframeAPIReady() {
+//     player = new YT.Player('player', {
+//         events: {
+//             'onReady': onPlayerReady,
+//             'onStateChange': onPlayerStateChange
+//         }
+//     });
+// }
+// function onPlayerReady(event) {
+//   playerReady = true;
+// }
+
+// function onPlayerStateChange(event) {
+//     if (event.data == YT.PlayerState.CUED) {
+//       event.target.playVideo();
+//     }
+// }
+
+var locationSlider;
+function locationSliderInit() {
+    try {locationSlider.destroy(false, false);}catch(e){}
+    locationSlider = new Swiper('.location_slider', {
+        slidesPerView:'auto',
+        spaceBetween:24,
+        init:false,
+        scrollbar: {
+            el:'.location_slider .swiper-scrollbar',
+            draggable:true,
+            hide:false,
+            dragSize:200
+        }
+    });
+    locationSlider.init();
+    locationSlider.update();
+}
+
+function specialSliderInit() {
+    var specialSlider = new Swiper('.special_slider', {
+        slidesPerView: 1,
+        centeredSlides: true,
+        spaceBetween:0,
+        loop: true,
+        pagination: {
+            el: ".special.swiper-pagination",
+        },
+        navigation: {
+            nextEl: ".special_slider .swiper-button-next",
+            prevEl: ".special_slider .swiper-button-prev",
+        },
+        autoplay: {
+            delay: 6000,
+            disableOnInteraction: false,
+        },
+        pauseOnMouseEnter: false,
+    });
+}
+
+function snsSliderInit() {
+    var snsSlider = new Swiper(".sns_slider", {
+        slidesPerView: 'auto',
+        touchRatio:0.6,
+        spaceBetween: 0,
+        edgeSwipeThreshold : 600,
+        centeredSlides: true,
+        preventClicks: true,
+        loop: true,
+        pagination: {
+            el: ".sns_slider .swiper-pagination",
+        },
+        autoplay: {
+            delay: 3000,
+            disableOnInteraction: false,
+        },
+        on: {
+            init: function() {
+                $('.sns_slider .swiper-slide').addClass('changed');
+            },
+            slideChangeTransitionStart: function() {
+                $('.sns_slider.swiper-container').css('pointer-events', 'none');
+                $('.sns_slider .swiper-slide').addClass('changing');
+                $('.sns_slider .swiper-slide').removeClass('changed');
+            },
+            slideChangeTransitionEnd: function() {
+                $('.sns_slider.swiper-container').css('pointer-events', 'auto');
+                $('.sns_slider .swiper-slide').removeClass('changing');
+                $('.sns_slider .swiper-slide').addClass('changed');
+            },
+            paginationRender: function() {
+                var first = document.querySelector('.sns_slider .swiper-pagination .swiper-pagination-bullet:nth-child(1)');
+                setTimeout(function() {
+                    first.classList.remove('swiper-pagination-bullet-active');
+                }, 0);
+                setTimeout(function() {
+                    first.classList.add('swiper-pagination-bullet-active');
+                }, 30);
+            }
+        },
+    });
+}
+
+function bannerSliderInit() {
+    var bannerSlider = new Swiper('.banner_slider', {
+        slidesPerView: 1,
+        slidesPerGroup: 1,
+        // loop: true,
+        navigation: {
+            nextEl: ".banner_slider .swiper-button-next",
+            prevEl: ".banner_slider .swiper-button-prev",
+        },
+        breakpoints: {
+            768: {
+                slidesPerView: 3,
+                slidesPerGroup: 3,
+            }
+        }
+    });
+    $(window).on('resize', function() {
+        bannerSlider.slideReset(300);
+    });
+}
+
+/* [s] 캘린더 */
+function renderCalender() {
+    
+    var kgs_viewYear = SHOP_MONTH.substring(0, 4); 
+    var kgs_viewMonth = parseInt(SHOP_MONTH.substring(5, 7)-1);
+    
+    $('.year-month').text(kgs_viewYear + '.' + (kgs_viewMonth + 1));
+    if (SHOP_MONTH <= START_MONTH) $('.sec_cal .go-prev').attr('disabled', true);
+    else $('.sec_cal .go-prev').attr('disabled', false);
+
+    var prevLast = new Date(kgs_viewYear, kgs_viewMonth, 0); //이전 월
+    var thisLast = new Date(kgs_viewYear, kgs_viewMonth + 1, 0); //현재 월
+
+    ////console.log(kgs_viewMonth);
+
+    //일주일 (0-6) 일:0, 월:1, 화:2, 수:3, 목:4, 금:5, 토:6
+
+    var PLDate = prevLast.getDate();  ///전월 일(all)
+    var PLDay = prevLast.getDay(); //전월 마지막 요일
+
+    var TLDate = thisLast.getDate(); //현재 월 일(all)
+    var TLDay = thisLast.getDay(); //현재달 마지막 요일
+
+    var prevDates = []; //전월 일(비활성영역)
+    var thisDates = new Array(); //다음 월 일(활성영역)
+    var nextDates = []; //다음 월 일(비활성영역)
+
+    for(var i=1; i <= TLDate; i++){
+        thisDates.push(i);
+    }
+
+    if (PLDay !== 0) { //전월 일(비활성영역) 계산식
+        for (var i = 0; i < PLDay; i++) {
+            prevDates.unshift(PLDate - i);
+        }
+    }
+
+    if (TLDay !== 0 ){ //다음 월 일(비활성영역) 계산식
+        for (var i = 1; i < 8 - TLDay; i++) { 
+            nextDates.push(i);
+        }
+    }
+
+    var dates = prevDates.concat(thisDates, nextDates); //현재 월 달력에 출력할 모든 일자
+    var firstDateIndex = dates.indexOf(1); //현재 월 일 자리 순서(시작)
+    var lastDateIndex = dates.lastIndexOf(TLDate); //현재 월 일 자리 순서(끝)
+
+    var firstDayOfWeek = PLDay === 0 ? 7 : PLDay;
+    var weekNo = Math.ceil((firstDayOfWeek - 1 + kgs_date.getDate()) / 7);    
+
+    // =================================================================
+    dates.forEach(function (kgs_date, i) {
+        var condition = i >= firstDateIndex && i < lastDateIndex + 1 ? 'this' : 'other'; //활성영역(this), 비활성영역(other)
+        var cdate = (condition == 'this')? 'data-date="' + kgs_viewYear + '-' + ('0'+(kgs_viewMonth + 1)).slice(-2) + '-' + ('0'+kgs_date).slice(-2)+'"':'';
+        dates[i] = '<div class="date" '+cdate+'><span class="' + condition + '">' + kgs_date + '</span></div>';
+    });
+
+    $('.dates').html(dates.join(''));
+    //$('.dates').empty();
+    //$('.dates').append(inHtml);
+    if(weekNo == 1){
+        $('.dates').addClass('firstweek');
+    }else if(weekNo == 2){
+        $('.dates').addClass('secondweek');
+    }else if(weekNo == 3){
+        $('.dates').addClass('thirdweek');
+    }else if(weekNo == 4){
+        $('.dates').addClass('fourthweek');
+    }else if(weekNo == 5){
+        $('.dates').addClass('fifthweek');
+    }else if(weekNo == 6){
+        $('.dates').addClass('sixthweek');
+    }
+    
+    //console.log('calendar_load_complete!!!');
+
+};
+
+function setCalendarDot(_color, _data) {
+    var $date = $('.dates .date[data-date]');
+    $date.each(function(){
+        $(this).find('span').removeClass(_color);
+        if ($(this).data('date') >= _data.FROM && $(this).data('date') <= _data.TO) {
+            $(this).find('span').addClass(_color);
+        }
+    });
+}
+
+/*팝업관련*/
+function toggleMainPopup() {
+    if(handleCookie.getCookie('today')=='y') {
+        $('.main_popup').removeClass('on');
+    } else {
+        $('.main_popup').addClass('on');
+    }
+
+    $('.main_popup').on('click', '.btn_today_close', function() {
+        handleCookie.setCookie('today','y', 1);
+        $(this).parents('.main_popup.on').removeClass('on');
+    });
+
+    $('.main_popup').on('click', '.btn_close', function() {
+        $(this).parents('.main_popup.on').removeClass('on');
+    });
+
+    $('.main_popup').on('click', 'a', function() {
+        var device = $(window).innerWidth() > 767 ? 'w_' : 'm_';
+        var lang = api.site.LANG+'_';
+        gtag('event', 'button', { 'event_category': '팝업링크', 'event_label': device+lang+'팝업' });
+    });
+}
+var handleCookie = {
+    setCookie : function(name, val, exp) {
+        var date = kgs_date;
+        date.setTime(date.getTime() + exp*24*60*60*1000);
+        document.cookie = name + '=' + val + ';expires=' + date.toUTCString() + ';path=/';
+    },
+    getCookie : function(name) {
+        var value = document.cookie.match('(^|;) ?' + name + '=([^;]*)(;|$)');
+        return value? value[2] : null;
+    }
+}

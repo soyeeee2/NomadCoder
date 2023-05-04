@@ -1,0 +1,49 @@
+/* arboria adobe font 추가 */
+@import url("https://use.typekit.net/rnc5caw.css");
+
+/* NotoSans */
+@font-face {
+      font-family:'NotoSansL';
+      font-style:normal;
+      src: url('NotoSans-Light.eot');
+      src: url('NotoSans-Light.eot?#iefix') format('embedded-opentype'),
+           url('NotoSans-Light.woff') format('woff'),
+           url('NotoSans-Light.ttf') format('truetype');
+}
+
+@font-face {
+      font-family:'NotoSansM';
+      font-style:normal;
+      src: url('NotoSans-Medium.eot');
+      src: url('NotoSans-Medium.eot?#iefix') format('embedded-opentype'),
+           url('NotoSans-Medium.woff') format('woff'),
+           url('NotoSans-Medium.ttf') format('truetype');
+}
+
+@font-face {
+      font-family:'NotoSansR';
+      font-style:normal;
+      src: url('NotoSans-Regular.eot');
+      src: url('NotoSans-Regular.eot?#iefix') format('embedded-opentype'),
+           url('NotoSans-Regular.woff') format('woff'),
+           url('NotoSans-Regular.ttf') format('truetype');
+}
+
+@font-face {
+      font-family:'NotoSansB';
+      font-style:normal;
+      src: url('NotoSans-Bold.eot');
+      src: url('NotoSans-Bold.eot?#iefix') format('embedded-opentype'),
+           url('NotoSans-Bold.woff') format('woff'),
+           url('NotoSans-Bold.ttf') format('truetype');
+}
+
+@font-face {
+    font-family:'NotoSansBlack';
+    font-style:normal;
+    src: url('NotoSans-Black.eot');
+    src: url('NotoSans-Black.eot?#iefix') format('embedded-opentype'),
+         url('NotoSans-Black.woff') format('woff'),
+         url('NotoSans-Black.ttf') format('truetype');
+}
+

@@ -1,0 +1,120 @@
+function getBanner() {
+    var _msg = 'TXT , EVERGLOW, LACHICA와 함께 한 2022 코리아그랜드세일 개막공연 다시보기';
+    switch (api.site.LANG) {
+        case 'en': _msg = "Replay the Korea Grand Sale 2022 opening concert with TXT, EVERGLOW AND LACHICA"; break;
+        case 'jp': _msg = "TXT、EVERGLOW、LACHICAと一緒に楽しんだ2022コリアグランドセール開幕公演を再視聴";break;
+        case 'cn': _msg = "再次与TXT、EVERGLOW、LACHICA一起观看2022韩国购物季开幕演出"; break;
+        case 'tw': _msg = "再次觀看與TXT , EVERGLOW, LACHICA一起的2022韓國購物季開幕演唱會"; break;
+    }
+
+
+    // 상단 배너
+    var bannerContent = '<div class="head_banner"><a href="javascript:;" class="inner"><img src="/static/img/common/header_banner.png" alt=""><p>' + _msg + '</p></a></div>';
+    var bannerYoutube = '<div class="layer_popup video_popup" id="popup_3"><div class="layer_outer"><div div class="layer_cont"><button class="btn_close">close</button><div class="youtube-wrapper vid_wrap"><div id="YTplayer" class="player YTplayer"></div></div></div></div></div>';
+    var bannerMp4 = '<div class="layer_popup video_popup" id="popup_4"><div class="layer_outer"><div div class="layer_cont"><button class="btn_close">close</button><div class="vid_wrap"><video class="mp4_wrapper" src="" controls></video></div></div></div></div>';
+    var $wrap = $('#wrap');
+    $wrap.prepend(bannerContent);
+
+    var $frag = $(document.createDocumentFragment());
+    $frag.append(bannerMp4);
+    $frag.append(bannerYoutube);
+    $wrap.append($frag);
+
+    if (api.site.LANG == 'cn') {
+        $('.head_banner a').attr('href', "https://youtu.be/zJn8q_PiI4E");
+        $('.head_banner a').attr('target', "_blank");
+        $('.head_banner a').attr('onclick', "_ga.sendGA('띠배너링크','띠배너')");
+    } else { 
+        $('.head_banner a').attr('onclick', "toggleBannerPopup()");
+    }
+    $('#popup_3 .btn_close').attr('onclick', "toggleVidPopup('#popup_3')");
+
+    var ua = window.navigator.userAgent;
+    var trident = ua.indexOf('Trident/');
+    if (trident > 0) {
+        // IE 11
+        YTplayer = new YT.Player('YTplayer', {
+            events: {
+                'onReady': onPlayerReady,
+                'onStateChange': onPlayerStateChange
+            }
+        });
+    }
+}
+var _ga = {
+    sendGA: function (event, label) {
+        var device = $(window).innerWidth() > 767 ? 'w_' : 'm_';
+        var lang = api.site.LANG+'_';
+        gtag('event', 'button', { 'event_category': event, 'event_label': device+lang+label });
+    }
+}
+
+function toggleBannerPopup() {
+    _ga.sendGA('띠배너링크','띠배너');
+    var vidId = '';
+    if (api.site.LANG == 'cn') {
+        $('.head_banner a').attr('href', "#test");
+        return;
+        // vidId= '//mvvideo10.meitudata.com/61de9b6fb8852643.mp4'
+    } else {
+        vidId = 'zJn8q_PiI4E';
+    }
+    if (vidId.indexOf('.mp4') == -1) {
+        // youtube
+        function readyPlayer() {
+            YTplayer.cueVideoById({
+                videoId: vidId,
+                suggestedQuality: 'large'
+            });
+        }
+        if (playerReady == true) {
+            readyPlayer();
+        } else {
+            setTimeout(function () {
+                readyPlayer();
+            }, 1000)
+        }
+        toggleVidPopup("#popup_3");
+    } else {
+        // $('.mp4_wrapper').attr('src', vidId);
+        // toggleVidPopup("#popup_4");
+        // document.querySelector('.mp4_wrapper').play();
+    }
+}
+
+
+// 영상 팝업
+var dimLayer = "<div id='dimLayer'></div>";
+
+function toggleVidPopup(id) {
+    // 팝업 열고 닫기	togglePopup(#id)
+    // 팝업 창 전환	togglePopup(#current_id, #open_id)
+    if ($(id).is(":visible")) {
+        try {
+            YTplayer.pauseVideo(); // 유튜브 멈춤
+            YTplayer.removeCueRange();
+            // console.log(player);
+            document.querySelector('.mp4_wrapper').pause(); // 영상 멈춤
+        } catch (e) {
+            console.log(e);
+        }
+        $(id).fadeOut("fast", function () { 
+            $(this).removeClass("on");
+            $('body').removeClass('popup-open vid-popup-open');
+        })
+        $("#dimLayer").fadeOut("fast", function() {
+            $(this).remove();
+        });
+        
+    } else {
+        // popSetPos(id);
+        $(id).fadeIn("fast").addClass("on");
+        $("body").append(dimLayer).addClass('popup-open vid-popup-open');
+        $('.layer_popup').on('click', function(e) {
+            var _target = $(e.target);
+            if(_target.is(this)) {
+                toggleVidPopup(id);
+            }
+        });
+    }
+}

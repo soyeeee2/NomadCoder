@@ -1,0 +1,291 @@
+var dimLayerGnb = "<div id='dimLayer_gnb'></div>";
+
+function init_layout() {
+    var _tpl_float_wrap = $('#_tpl_float_wrap').html();
+
+    api.ajaxCmd('/common/floatbanner', {}, function(rtn){
+        if (rtn.data.floatbanners.length) {
+            $('.float_wrap').html(api.html_merge(_tpl_float_wrap, rtn.data.floatbanners));
+            floatSliderInit();
+            rouletteInit();
+        } else {
+            // + 버튼 비노출
+            $('.btn_float_open').addClass('hidden');
+        }
+
+         // 룰렛 테스트
+    });
+
+	init();
+    headerInit();
+    footerFamily();
+    goTop();
+    getBanner();
+    headerFix();
+    lottieAni();
+    
+}
+
+function floatSliderInit() {
+    $('.btn_float_open').on('click', function () {
+        if ($('.btn_float_open').hasClass('show') == true) {
+            $('.btn_float_open').removeClass('show');
+            $('.float_wrap').removeClass('show');
+            $('.fixed_wrap .btn_roulette_open').removeClass('hidden')
+            
+        } else {
+            $('.btn_float_open').addClass('show');
+            $('.float_wrap').addClass('show');
+            $('.fixed_wrap .btn_roulette_open').addClass('hidden')
+        }
+    });
+}
+
+$(window).on('load', function() {
+    getHeightData();
+});
+
+$(window).on("scroll", function(){
+	btnTop();
+    // fixBtnShow();
+    footerFix();
+});
+
+
+var heightData = {}
+
+function getHeightData() {
+    heightData = {
+        kvHeight:$('header').outerHeight() + $('.sec_kv').outerHeight()>200?$('header').outerHeight() + $('.sec_kv').outerHeight():200,
+        screenW:$(window).outerWidth(),
+        screenH:$(window).height(),
+        nowTop:$(window).scrollTop(),
+        footerT : $('body').outerHeight() -  $(window).height() - $('footer').outerHeight(),
+    }
+}
+
+function headerInit(){
+    var _msg = "검색어를 입력해주세요.";
+    var _placeholder = "Search";
+    var _another_msg = "다른 검색어를 입력해 주세요.";
+
+    switch (api.site.LANG) {
+        case 'en': _msg = "Enter your Search."; _placeholder = "Search"; _another_msg = "Please enter another search word."; break;
+        case 'jp': _msg = "検索ワードを入力してください。"; _placeholder = "検索する"; _another_msg = "他の検索ワードを入力してください。"; break;
+        case 'cn': _msg = "请输入搜索词。"; _placeholder = "搜尋"; _another_msg = "请输入其他搜索词。"; break;
+        case 'tw': _msg = "請輸入關鍵詞"; _placeholder = "搜索"; _another_msg = "請輸入另一個關鍵詞"; break;
+    }
+
+    $("#top_search_text").attr("placeholder", _placeholder);
+    
+	/* header */
+	$("header .search_area input").on({
+		"focusin": function(){
+			$(".searchHot").show();
+		},
+		"focusout": function(){
+			setTimeout(function(){
+				$(".searchHot").hide();
+				$(".searchMatch").hide();
+			},200);
+		},
+		"keyup": function(){
+			$(".searchHot").hide();
+			$(".searchMatch").show();
+		},
+	});
+
+	$("header .my_menu li, header .members_menu li").on({
+		"click": function(){
+			if($(this).find(".view_box").is(":hidden")) {
+				$("header .my_menu li, header .members_menu li").removeClass("on");
+				$(".view_box").hide();
+				$(this).addClass("on");
+				$(this).find(".view_box").show();
+			} else {
+				$(this).removeClass("on");
+				$(this).find(".view_box").hide();
+			}			
+		}
+	});
+
+	$("header .btn_shop").on({
+		"mouseenter": function(){
+			$(".shop_list").addClass("on");
+		},
+		"mouseleave": function(){
+			$(".shop_list").removeClass("on");
+		}		
+	});
+
+	$("header .btn_shop_write").on("click", function(){
+		if($(this).find(".view_box").is(":hidden")) {
+			$(".view_box").hide();
+			$(this).find(".view_box").show();
+		} else {
+			$(this).find(".view_box").hide();
+		}	
+	});
+
+    $('#top_search_text').keyup(function(e){
+		if (e.keyCode == 13) allSearch();
+	});
+
+    $(".head_top .search_box").on("click", '.btn_search', function(){
+        allSearch();
+    });
+
+    $('.search_box').on('click', '.btn_close', function() {
+        $(this).parent().removeClass('on');
+    });
+    $('.search_box').on('click', '.btn_search_open', function() {
+        $(this).parent().addClass('on');
+    });
+    $('.gnb').on('click','.btn_gnb', function() {
+        
+        gnbOpen();
+    });
+    $('.gnb').on('click','.btn_close', function() {
+        
+        gnbOff();
+    });
+    
+    function allSearch() {
+        var _search_text = $("#top_search_text").val();  
+        
+        check_search_text = _search_text.replace(/ /g, ''); // 검색어 공백 제거
+        if (check_search_text == "") {
+            alert(_msg);
+            return;
+        }
+
+        if (check_search_text == "%") {
+            alert(_another_msg);
+            return;
+        }
+
+        location.href = "/search?search_text=" + encodeURI(_search_text);
+    }
+
+    function gnbOpen() {
+        $('.gnb .nav').addClass('on');
+        $("body").append(dimLayerGnb);
+        $('body').addClass('popup-open');
+    }
+    function gnbOff() {     
+        if($('.gnb .nav').hasClass("on")) {   
+            $('.gnb .nav').removeClass('on');
+            $('body').removeClass('popup-open');
+            $("#dimLayer_gnb").fadeOut("fast", function () {
+                $("#dimLayer_gnb").remove();
+            });
+        }
+    }
+
+    $(window).on('resize', function() {
+        getHeightData();
+        // //console.log(heightData);
+        var w = $(window).width();
+        if(w > 767){
+            gnbOff();
+        }
+    });
+    getCurrentPage();
+}
+
+
+
+
+function headerFix() {
+    // console.log('headerFix_실행')
+    var $wrap = $('#wrap');
+    var windowWidth = $(window).innerWidth();
+    var headerBanner = $(".head_banner").length == 0 ? 0 : $(".head_banner").outerHeight();
+    var topHeight = windowWidth > 767 ? $(".head_top").outerHeight() : 0;
+    var headerTop = topHeight + headerBanner;
+
+    var st = 0;
+
+    st = $(window).scrollTop();
+    
+    if (st >= headerTop) {
+        $wrap.addClass("headFix");
+    }
+    else {
+        $wrap.removeClass("headFix");
+    }
+
+    $(window).on('resize', function (e) {
+        windowWidth = e.target.innerWidth;
+        headerBanner = $(".head_banner").length == 0 ? 0 : $(".head_banner").outerHeight();
+        topHeight = windowWidth > 767 ? $(".head_top").outerHeight() : 0;
+        headerTop = topHeight + headerBanner;
+    })
+
+    $(window).on('scroll', function () {
+        st = $(window).scrollTop();
+        if (st >= headerTop) {
+            $wrap.addClass("headFix");
+        }
+        else {
+            $wrap.removeClass("headFix");
+        }
+    });
+	
+}
+
+function btnTop(){
+	if($(window).scrollTop() >= 100) {
+		$(".fixed_wrap").addClass("show");	
+	} else {
+		$(".fixed_wrap").removeClass("show");						
+	}
+}
+
+function footerFix() {
+    if($(window).scrollTop() < heightData.footerT) {
+		$(".fixed_wrap").addClass("fixed");	
+	} else {
+		$(".fixed_wrap").removeClass("fixed");						
+	}
+}
+
+function footerFamily() {
+    $('.family').on('click',function() {
+        $(this).toggleClass('on');
+    })
+}
+
+function goTop() {
+    $('.btn_top').on('click', function() {
+        $('html, body').animate({scrollTop: '0'}, 300);
+    });
+}
+
+function getCurrentPage() {
+    var winLoc = location.href;
+    var navIdx;
+    //console.log(winLoc);
+    if (winLoc.indexOf("/kgs") > -1) {
+        navIdx = 1;
+    } else if (winLoc.indexOf("/calendar") > -1) {
+        navIdx = 2;
+    } else if (winLoc.indexOf("/trend") > -1) {
+        navIdx = 3;
+    } else if (winLoc.indexOf("/featured") > -1) {
+        navIdx = 4;
+    } else if (winLoc.indexOf("/benefit") > -1) {
+        navIdx = 5;
+    } else if (winLoc.indexOf("/shop") > -1) {
+        navIdx = 6;
+    } else if (winLoc.indexOf("/traveltips") > -1) {
+        navIdx = 7;
+    } else if (winLoc.indexOf("/event") > -1) {
+        navIdx = 8;
+    } else {
+        navIdx = 0;
+    }
+    if (navIdx != 0) {
+        $('.gnb .nav li:nth-child(' + navIdx + ') a').addClass('on');
+    }
+}
