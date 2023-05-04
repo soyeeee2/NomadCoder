@@ -1,0 +1,16 @@
+body{
+  background-color: lightblue;
+}
+
+canvas{
+  width: 500px;
+  height: 500px;
+  background-color: #fff;
+  border: 1px solid lightslategray;
+}
+
+body{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
